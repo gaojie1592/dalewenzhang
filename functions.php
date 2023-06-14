@@ -1,33 +1,4 @@
 <?php
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
-// 程序逻辑说明
-// 访问指定页面直接跳转到指定页面
-// 页头head.php //页尾footer.php
-// 主页home.php //文章页single.php //页面page.php //类别category.php //标签tag.php //作者author.php //搜索结果search.php //404 404.php
-// 主题自定义页面
-// 优化模块,删除页头与页脚无效加载数据
-// 
-// #FF0000   红
-// #BA8475   棕
-// #FFF6F2   白
-// #281713   黑
-
-//优化文章修改历史：Post-Revisioning
-// define('AUTOSAVE_INTERVAL', 120); // 修改 WordPress 编辑器自动保存时间间隔为 120 秒保存一次
-// define('WP_POST_REVISIONS', 5); //仅保留保留 5 个最近修改，也可以减小此数字，但不能太低了
-// define('EMPTY_TRASH_DAYS', 7); //7 天后自动清空回收站，这个自己根据情况设定
-// define('CORE_UPGRADE_SKIP_NEW_BUNDLED', true); //更新时跳过 wp-content 目录，增加更新效率
-//通过剔除对模板路径和样式表路径的数据库查询，这样可提高站点的性能。
-// define('TEMPLATEPATH', '/wp-content/themes/dale6');
-// define('STYLESHEETPATH', '/wp-content/themes/dale6');
-// define('WP_HTTP_BLOCK_EXTERNAL', true);  //禁止 WordPress 程序发出对外请求
-// define('WP_ACCESSIBLE_HOSTS', 'ping.baidu.com'); //仅允许 WordPress 向 ping.baidu.com 发送请求
-// define('WP_CACHE', true); // 打开 WordPress 自带的缓存功能
-// define('ENABLE_CACHE', true); // 缓存开关
-// define('CACHE_EXPIRATION_TIME', 3600); // 缓存时间间隔
-
 if (!session_id()) {
     session_start();
 } else {
@@ -461,9 +432,9 @@ function dale6_com_add_views()
     $post = get_post();
     $post_ID = $post->ID;
     if ($post_ID) {
-        $post_views = (int)get_post_meta($post_ID, 'views', true);
-        if (!update_post_meta($post_ID, 'views', ($post_views + 1))) {
-            add_post_meta($post_ID, 'views', 1, true);
+        $post_views = (int)get_post_meta($post_ID, 'post_views_count', true);
+        if (!update_post_meta($post_ID, 'post_views_count', ($post_views + 1))) {
+            add_post_meta($post_ID, 'post_views_count', 1, true);
         }
     }
 }
@@ -473,7 +444,7 @@ function dale6_com_the_views($echo = 0)
     if ($echo > 0) return $echo;
     $post = get_post();
     $post_ID = $post->ID;
-    $views = (int)get_post_meta($post_ID, 'views', true);
+    $views = (int)get_post_meta($post_ID, 'post_views_count', true);
     return $views;
 }
 function echo_dale6_com_the_views($echo = 0)
