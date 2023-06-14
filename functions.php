@@ -557,7 +557,7 @@ add_action('add_meta_boxes', function () {
                 <tr>
                     <th><label for="biaotibiaoqian"><?php _e('文章标题前缀', 'dale6_com') ?></label></th>
                     <td>
-                        <input name="biaotibiaoqian" id="biaotibiaoqian" type="text" value="<?= isset($seo_arr['biaotibiaoqian']) ? $seo_arr['biaotibiaoqian'] : '' ?>" class="regular-text">
+                        <input name="biaotibiaoqian" id="biaotibiaoqian" type="text" value="<?= htmlentities(isset($seo_arr['biaotibiaoqian']) ? $seo_arr['biaotibiaoqian'] : '') ?>" class="regular-text">
                         <p><?php _e('为空则不输出,一般用于原创转载识别,HTML格式,CSS框架[Bootstrap v5.3.0],点击例子:', 'dale6_com') ?>
                             <span class="badge bg-secondary add_biaotibiaoqian">原创</span>
                         </p>
