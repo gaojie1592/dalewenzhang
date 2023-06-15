@@ -315,7 +315,7 @@ function to_zhuti_bianji_link()
     ?>
         <li class="nav-item text-center">
             <a class="nav-link dl_a" href="<?php echo wp_customize_url('dale6') ?>">
-                <?php _e('跳转到主题编辑添加菜单！'); ?>
+                <?php _e('跳转到主题编辑添加菜单！', 'dale6_com'); ?>
             </a>
         </li>
     <?php
@@ -537,7 +537,7 @@ add_filter('login_headerurl', function () {
 
 // 文章编辑添加box
 add_action('add_meta_boxes', function () {
-    add_meta_box('dale6_com_post_seo', __('大乐文章SEO设置', 'textdomain'), function ($post) {
+    add_meta_box('dale6_com_post_seo', __('大乐文章SEO设置', 'dale6_com'), function ($post) {
         wp_nonce_field('wenzhang_meta_input_a', 'custom_nonce');
         $seo_arr = get_post_meta($post->ID, 'dale6_com_post_seo', true);
     ?>
@@ -610,7 +610,7 @@ add_action('save_post', function ($post_ID) {
 if ($is_admin) {
     // 主题设置菜单
     add_action('admin_menu', function () {
-        add_menu_page(__('大乐主题|极致简洁', 'dale6'), __('大乐主题', 'dale6'), 'manage_options', 'dale6_com_Theme_shezhiyemian', function () {
+        add_menu_page(__('大乐主题|极致简洁', 'dale6_com'), __('大乐主题', 'dale6_com'), 'manage_options', 'dale6_com_Theme_shezhiyemian', function () {
         ?>
             <div class="wrap">
                 <h1><?php _e('大乐主题相关设置', 'dale6_com') ?></h1>
