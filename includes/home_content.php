@@ -21,7 +21,4 @@
             </nav>
         <?php endif; ?>
     </div>
-
-    <?php //get_template_part('tools/youqinglianjie'); 
-    ?>
 </div>
