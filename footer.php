@@ -13,7 +13,7 @@
     </div>
     <div class="p-2 fw-light dl_a text-center">
         <span class="text-muted">Copyright © <?php echo date("Y") ?></span>
-        <a class="text-decoration-none" href="<?php echo home_url() ?>" target="_blank"><?php echo get_bloginfo("name") ?></a>
+        <a class="text-decoration-none" href="<?php echo home_url() ?>" target="_blank"><?php echo get_bloginfo("name", 'display') ?></a>
         <span class="text-muted"> · 基于 </span><a href="https://wordpress.org" target="_blank">WordPress</a>
         <span class="text-muted"> · </span><a class="text-decoration-none" href="<?php echo home_url() ?>" target="_blank">使用大乐主题</a>
         <?php global $options; ?>

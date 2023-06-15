@@ -139,19 +139,6 @@ function pinglun_text($comment_text)
     }
     return $comment_text;
 }
-// function pinglun_text($comment_text, $comment = null)
-// {
-//     // 评论存入数据库
-//     // if (null === $comment) file_put_contents(__DIR__ . '/CS', 'SAVE' . PHP_EOL . $comment_text . PHP_EOL, FILE_APPEND);
-//     // if (null !== $comment) file_put_contents(__DIR__ . '/CS', 'SHOW' . PHP_EOL . $comment_text . PHP_EOL, FILE_APPEND);
-//     // $comment_text = pinglun_guolv($comment_text);
-//     $comment_text = str_ireplace(array("\r\n", "\n"), '<br>', $comment_text);
-//     return $comment_text;
-// }
-// function content_text_guolv($content)
-// {
-//     return pinglun_guolv($content, false);
-// }
 
 // 文章ID输出文章top
 add_filter('dale6_com_post_top', function ($postid) {
@@ -176,21 +163,12 @@ add_filter('preprocess_comment', function ($comment) {
 // 保存评论 comment_post
 // 更新评论
 add_filter('comment_save_pre', 'pinglun_text_post');
-
 // 输出评论内容 
 add_filter('comment_text', 'pinglun_text');
 // 显示在提要中使用的当前评论内容。 
 add_filter('comment_text_rss', 'pinglun_text');
 // 过滤评论摘录
 add_filter('comment_excerpt', 'pinglun_text');
-//修改默认头像
-add_filter('avatar_defaults', 'default_avatar');
-function default_avatar($avatar_defaults)
-{
-    $myavatar = get_template_directory_uri() . '/img/beiantubiao_j.png'; //图文url路径
-    $avatar_defaults[$myavatar] = "大乐主题默认图标"; //图片的描述名称
-    return $avatar_defaults;
-}
 /**
  * 添加子评论到父评论
  */
@@ -207,6 +185,9 @@ function dale6_com_add_comment_children($comments, $comment)
     }
     return $comments;
 }
+/**
+ * 输出评论
+ */
 function dale6_com_echo_comment($comments, $post, $user, $is_children = false)
 {
     $is_login = $user->exists();
@@ -468,10 +449,18 @@ if (!function_exists('dale6_com_js_data')) {
 add_action('wp_head', 'dale6_com_js_data');
 add_action('admin_enqueue_scripts', 'dale6_com_js_data');
 
+add_filter('bloginfo', function ($output, $show) {
+    // 限制网站名称长度为20字符
+    if ($show == 'name') $output = mb_substr($output, 0, 20, 'utf8');
+    // 限制网站介绍长度为200字符
+    if ($show == 'description') $output = mb_substr($output, 0, 200, 'utf8');
+    return $output;
+}, 10, 2);
+
 add_action('wp_head', function () {
     if (is_front_page() || is_home()) {
-        $description = get_bloginfo('name');
-        $keywords = get_bloginfo('description');
+        $description = get_bloginfo('name', 'display');
+        $keywords = get_bloginfo('description', 'display');
     } else if (is_single()) {
         $postid = get_the_ID();
         if ($postid) {
@@ -479,7 +468,7 @@ add_action('wp_head', function () {
             $seo_arr = get_post_meta($postid, 'dale6_com_post_seo', true);
             $description1 = isset($seo_arr['seo_description']) ? $seo_arr['seo_description'] : '';
             if (empty($description1)) {
-                $description = get_the_title() . ' | ' . get_bloginfo('name') . ' | '  . mb_strimwidth(str_ireplace(array(' ', "\r\n", "\n"), '', strip_tags(get_the_content())), 0, 180);
+                $description = get_the_title() . ' | ' . get_bloginfo('name', 'display') . ' | '  . mb_substr(str_ireplace(array(' ', "\r\n", "\n"), '', strip_tags(get_the_content())), 0, 180, 'utf8');
             } else {
                 $description = $description1;
             }
@@ -498,20 +487,20 @@ add_action('wp_head', function () {
     } else if (is_category()) {
         $cat = get_query_var('cat');
         $yourcat = get_category($cat);
-        $description = category_description() . $yourcat->cat_name . ' | ' . get_bloginfo('name');
-        $keywords = single_cat_title('', false) . ', ' . get_bloginfo('description');
+        $description = category_description() . $yourcat->cat_name . ' | ' . get_bloginfo('name', 'display');
+        $keywords = single_cat_title('', false) . ', ' . get_bloginfo('description', 'display');
     } else if (is_tag()) {
-        $description = tag_description() . single_tag_title('', false) . ' | ' . get_bloginfo('name');
-        $keywords = single_tag_title('', false) . ' | ' . get_bloginfo('description');
+        $description = tag_description() . single_tag_title('', false) . ' | ' . get_bloginfo('name', 'display');
+        $keywords = single_tag_title('', false) . ' | ' . get_bloginfo('description', 'display');
     } else if (is_archive()) {
-        $description = get_the_archive_title() . ' | ' . get_bloginfo('name');
-        $keywords = get_bloginfo('description');
+        $description = get_the_archive_title() . ' | ' . get_bloginfo('name', 'display');
+        $keywords = get_bloginfo('description', 'display');
     } else if (is_page()) {
-        $description = (empty(get_the_title()) ? '' : get_the_title() . ' | ') . get_bloginfo('name');
-        $keywords = get_bloginfo('description');
+        $description = (empty(get_the_title()) ? '' : get_the_title() . ' | ') . get_bloginfo('name', 'display');
+        $keywords = get_bloginfo('description', 'display');
     } else {
-        $description = get_bloginfo('name');
-        $keywords = get_bloginfo('description');
+        $description = get_bloginfo('name', 'display');
+        $keywords = get_bloginfo('description', 'display');
     }
     echo "<title>$description - $keywords</title>";
     echo "<meta name='description' content='$description' />";
@@ -644,6 +633,7 @@ if ($is_admin) {
             'stp_api_settings_section_callback',
             'dale6_com'
         );
+
         add_settings_field(
             'dale6_com_pingluntxleixing',
             __('评论头像显示方法', 'dale6_com'),
@@ -656,6 +646,14 @@ if ($is_admin) {
             'dale6_com_pinglunbeijingyanse',
             __('评论头像背景颜色', 'dale6_com'),
             'dale6_com_echo_pinglunbeijingyanse',
+            'dale6_com',
+            'dale6_com_setting_section'
+        );
+
+        add_settings_field(
+            'dale6_com_yetoutianjia',
+            __('页头添加HTML', 'dale6_com'),
+            'dale6_com_echo_yetoutianjia',
             'dale6_com',
             'dale6_com_setting_section'
         );
@@ -815,15 +813,23 @@ function dale6_com_echo_wenzhangzhuijia()
 {
     global $options;
 ?>
-    <p><?php _e('在文章结尾添加HTML', 'dale6_com') ?></p>
+    <p><?php _e('在文章结尾添加HTML,一般用于添加免责声明与转发说明', 'dale6_com') ?></p>
     <textarea name="dale6_com_setting[wenzhangzhuijia]" class="regular-text" rows="6"><?php echo isset($options['wenzhangzhuijia']) ? $options['wenzhangzhuijia'] : ''; ?></textarea>
+<?php
+}
+function dale6_com_echo_yetoutianjia()
+{
+    global $options;
+?>
+    <p><?php _e('在页头添加HTML,一般用于添加相关 meta,ling 等', 'dale6_com') ?></p>
+    <textarea name="dale6_com_setting[yetoutianjia]" class="regular-text" rows="6"><?php echo isset($options['yetoutianjia']) ? $options['yetoutianjia'] : ''; ?></textarea>
 <?php
 }
 function dale6_com_echo_yejiaozhuijia()
 {
     global $options;
 ?>
-    <p><?php _e('在页脚最后添加HTML', 'dale6_com') ?></p>
+    <p><?php _e('在页脚最后添加HTML,一般用于添加备案的a链接', 'dale6_com') ?></p>
     <textarea name="dale6_com_setting[yejiaozhuijia]" class="regular-text" rows="6"><?php echo isset($options['yejiaozhuijia']) ? $options['yejiaozhuijia'] : ''; ?></textarea>
 <?php
 }

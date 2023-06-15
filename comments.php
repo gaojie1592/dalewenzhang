@@ -10,17 +10,7 @@
 	$comments = $wpdb->get_results($sql);
 	//获取主评论总数量
 	$cnt = count($comments);
-	// echo '<pre>';
-	// var_dump($comments);
-	// echo '</pre>';
 	if ($cnt > 0) :
-		// 修改转载pingback和trackback的评论格式
-		// foreach ($comments as &$comment) {
-		// 	if ($comment->comment_type == 'pingback' || $comment->comment_type == 'trackback') {
-		// 		$comment->comment_content = apply_filters('dale6_pingback_or_trackback_comment_content', $comment);
-		// 		$comment->display_name = apply_filters('dale6_pingback_or_trackback_display_name', $comment);
-		// 	}
-		// }
 		// 评论分级与排列
 		$comments_a = $comments_b = $comments_c = array();
 		foreach ($comments as $k => $v) {
@@ -45,10 +35,6 @@
 		foreach ($comments_b as $v) {
 			$comments_a = dale6_com_add_comment_children($comments_a, $v);
 		}
-		// echo '<pre>';
-		// var_dump($comments_a);
-		// echo '</pre>';
-		// exit;
 		// 按照点赞排序
 		$comments = array();
 		if (count($comments_a) > 1) {
@@ -73,10 +59,6 @@
 		} else {
 			$comments[] = current($comments_a);
 		}
-		// echo '<pre>';
-		// var_dump($comments);
-		// echo '</pre>';
-		// exit;
 		// 是否分页
 		$pcs = get_option('page_comments');
 		// 如果分页拿出当前页评论数据

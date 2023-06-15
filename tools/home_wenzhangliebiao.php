@@ -6,7 +6,7 @@
         </div>
         <h5>
             <?php $seo_arr = get_post_meta($post->ID, 'dale6_com_post_seo', true); ?>
-            <a class="dl_a stretched-link text-decoration-none" href="<?php the_permalink(); ?>"><?= isset($seo_arr['biaotibiaoqian']) ? $seo_arr['biaotibiaoqian'] : '' ?>"<?= mb_strimwidth(strip_tags(apply_filters('dale6_com_the_title', get_the_title())), 0, 34, "..."); ?></a>
+            <a class="dl_a stretched-link text-decoration-none" href="<?php the_permalink(); ?>"><?= isset($seo_arr['biaotibiaoqian']) ? $seo_arr['biaotibiaoqian'] : '' ?><?= mb_strimwidth(strip_tags(apply_filters('dale6_com_the_title', get_the_title())), 0, 34, "..."); ?></a>
         </h5>
         <span class="mb-1 text-muted fw-light"><?= apply_filters('dale6_com_the_excerpt', get_the_content()); ?></span>
         <div class="d-flex align-items-center me-3 dsw-80">
