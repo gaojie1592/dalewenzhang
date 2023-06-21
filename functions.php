@@ -46,7 +46,7 @@ function theme_setup()
     );
     add_theme_support('custom-background', $bg_defaults);
     // 自定义页头
-    add_theme_support('custom-header');
+    // add_theme_support('custom-header');
     // 自定义logo
     add_theme_support('custom-logo');
 }
