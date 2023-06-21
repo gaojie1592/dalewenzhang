@@ -13,23 +13,23 @@ while (have_posts()) : the_post(); ?>
             $seo_arr = get_post_meta($post->ID, 'dale6_com_post_seo', true);
             $biaotibiaoqian = isset($seo_arr['biaotibiaoqian']) ? $seo_arr['biaotibiaoqian'] : '';
             ?>
-            <h1 class="card-title"><?= $biaotibiaoqian; ?><?= apply_filters('dale6_com_the_title', get_the_title()); ?></h1>
+            <h1 class="card-title"><?php echo $biaotibiaoqian; ?><?php echo apply_filters('dale6_com_the_title', get_the_title()); ?></h1>
             <div class="card-text">
                 <span class="dale6_svg_eye wh-16px px-2"></span>
                 <span class="text-muted fw-light mx-2">
-                    <?= dale6_com_the_views(); ?>
+                    <?php echo dale6_com_the_views(); ?>
                 </span>
                 <span class="dale6_svg_up wh-16px px-2"></span>
                 <span class="text-muted fw-light mx-2">
                     <?php $post_top_sum = apply_filters('dale6_com_post_top', $post->ID); ?>
-                    <?= $post_top_sum; ?>
+                    <?php echo $post_top_sum; ?>
                 </span>
                 <span class="dale6_svg_pinglun wh-16px px-2"></span>
                 <span class="text-muted fw-light mx-2">
-                    <?= $post->comment_count; ?>
+                    <?php echo $post->comment_count; ?>
                 </span>
                 <?php if ($user->ID == $post->post_author) : ?>
-                    <span class="text-muted pe-2"><a rel="nofollow" href="<?= admin_url('post.php?action=edit&post=') . $post->ID ?>"><?= __('编辑', 'dale6_com'); ?></a></span>
+                    <span class="text-muted pe-2"><a rel="nofollow" href="<?php echo admin_url('post.php?action=edit&post=') . $post->ID ?>"><?php echo __('编辑', 'dale6_com'); ?></a></span>
                 <?php endif; ?>
             </div>
             <div class="card-text d-flex align-items-center py-3 mb-3 border-bottom">
@@ -39,7 +39,7 @@ while (have_posts()) : the_post(); ?>
                 <div class="flex-grow-1 d-flex flex-column ms-3">
                     <div class="d-flex">
                         <div class="d-inline-block text-truncate w-150px">
-                            <a href="<?php echo get_author_posts_url($post->post_author) ?>"><?= mb_substr(dale6_com_get_display_name($post), 0, 50, 'utf8'); ?></a>
+                            <a href="<?php echo get_author_posts_url($post->post_author) ?>"><?php echo mb_substr(dale6_com_get_display_name($post), 0, 50, 'utf8'); ?></a>
                         </div>
                     </div>
                     <div class="text-muted lh-1">
@@ -47,7 +47,7 @@ while (have_posts()) : the_post(); ?>
                     </div>
                 </div>
             </div>
-
+            <?php if (has_post_thumbnail()) the_post_thumbnail(); ?>
             <?php echo dale6_the_content($post->post_content); ?>
 
             <?php $link = esc_url(apply_filters('the_permalink', get_permalink($post), $post)); ?>
@@ -61,7 +61,7 @@ while (have_posts()) : the_post(); ?>
                 <div class="d-flex align-items-center pb-3">
                     <span class="dale6_svg_tags wh-16px px-2"></span>
                     <?php foreach ($post_tags as $tag) : ?>
-                        <a class="btn btn-outline-secondary btn-sm ms-2" href="<?= get_tag_link($tag->term_id); ?>"><?php echo $tag->name ?></a>
+                        <a class="btn btn-outline-secondary btn-sm ms-2" href="<?php echo get_tag_link($tag->term_id); ?>"><?php echo $tag->name ?></a>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>

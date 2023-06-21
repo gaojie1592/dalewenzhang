@@ -13,17 +13,17 @@
             <?php foreach ($lastposts as $posta) : ?>
                 <div class="d-flex py-1">
                     <span class="align-self-center me-2">
-                        <?= $a++; ?>.
+                        <?php echo $a++; ?>.
                     </span>
                     <p class="flex-grow-1 text-truncate card-text mb-0">
                         <?php
                         $title = trim($posta->post_title);
                         if (empty($title)) $title = __('未知标题', 'dale6_com');
                         ?>
-                        <a class="dl_a text-decoration-none" target="_blank" href="<?= get_permalink($posta->ID); ?>"><?= $title; ?></a>
+                        <a class="dl_a text-decoration-none" target="_blank" href="<?php echo get_permalink($posta->ID); ?>"><?php echo $title; ?></a>
                     </p>
                     <span class="text-muted align-self-center ms-2">
-                        <?= $posta->comment_count; ?>
+                        <?php echo $posta->comment_count; ?>
                     </span>
                 </div>
             <?php endforeach; ?>

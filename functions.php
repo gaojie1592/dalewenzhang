@@ -20,8 +20,54 @@ $options = get_option('dale6_com_setting');
 //     load_theme_textdomain('wpdocs_theme', get_template_directory() . '/languages');
 // }
 
-// 关闭顶部动作条
-show_admin_bar(false);
+
+function theme_setup()
+{
+    /** automatic feed link*/
+    add_theme_support('automatic-feed-links');
+    /** tag-title **/
+    add_theme_support('title-tag');
+    /** post formats */
+    $post_formats = array('aside', 'image', 'gallery', 'video', 'audio', 'link', 'quote', 'status');
+    add_theme_support('post-formats', $post_formats);
+    // 开启文章特色图
+    add_theme_support('post-thumbnails');
+    /** HTML5 support **/
+    add_theme_support('html5', array('comment-list', 'comment-form', 'search-form', 'gallery', 'caption','script', 'style'));
+    /** refresh widgest **/
+    add_theme_support('customize-selective-refresh-widgets');
+    /** custom background **/
+    $bg_defaults = array(
+        'default-image'          => '',
+        'default-preset'         => 'default',
+        'default-size'           => 'cover',
+        'default-repeat'         => 'no-repeat',
+        'default-attachment'     => 'scroll',
+    );
+    add_theme_support('custom-background', $bg_defaults);
+    /** custom header **/
+    $header_defaults = array(
+        'default-image'          => '',
+        'width'                  => 300,
+        'height'                 => 60,
+        'flex-height'            => true,
+        'flex-width'             => true,
+        'default-text-color'     => '',
+        'header-text'            => true,
+        'uploads'                => true,
+    );
+    add_theme_support('custom-header', $header_defaults);
+    /** custom log **/
+    add_theme_support('custom-logo', array(
+        'height'      => 60,
+        'width'       => 400,
+        'flex-height' => true,
+        'flex-width'  => true,
+        'header-text' => array('site-title', 'site-description'),
+    ));
+}
+add_action('after_setup_theme', 'theme_setup');
+
 // 添加JS到首页 
 if (!function_exists('dale6_com_script')) {
     function dale6_com_script()
@@ -207,9 +253,9 @@ function dale6_com_echo_comment($comments, $post, $user, $is_children = false)
                                     <?php _e('待审核', 'dale6_com') ?><?php _e('作者', 'dale6_com') ?>
                                 <?php else : ?>
                                     <?php if ($comment->comment_type == 'pingback' || $comment->comment_type == 'trackback') : ?>
-                                        <?= mb_substr(dale6_com_get_display_name($comment), 0, 50, 'utf8'); ?>
+                                        <?php echo mb_substr(dale6_com_get_display_name($comment), 0, 50, 'utf8'); ?>
                                     <?php else : ?>
-                                        <a href="<?php echo get_author_posts_url($comment->user_id) ?>"><?= mb_substr(dale6_com_get_display_name($comment), 0, 50, 'utf8'); ?></a>
+                                        <a href="<?php echo get_author_posts_url($comment->user_id) ?>"><?php echo mb_substr(dale6_com_get_display_name($comment), 0, 50, 'utf8'); ?></a>
                                     <?php endif; ?>
                                 <?php endif; ?>
                             </div>
@@ -224,11 +270,11 @@ function dale6_com_echo_comment($comments, $post, $user, $is_children = false)
                 </div>
                 <div class="d-flex flex-column">
                     <?php if ('0' == $comment->comment_approved) : ?>
-                        <div class="pt-3"><?php _e('您的评论正在等待审核.', 'dake6_com'); ?></div>
+                        <div class="pt-3"><?php _e('您的评论正在等待审核.', 'dale6_com'); ?></div>
                     <?php else : ?>
                         <div class="pt-3 overflow-hidden comment-text">
                             <a rel="nofollow" class="btn btn-sm border w-100 bg-secondary-subtle comment-btn" style="display:none;"><?php _e('评论过长,点击展开', 'dale6_com') ?><?php _e('展开', 'dale6_com') ?></a>
-                            <?= apply_filters('comment_text', $comment->comment_content) ?>
+                            <?php echo apply_filters('comment_text', $comment->comment_content) ?>
                         </div>
                         <div class="d-flex align-items-center">
                             <div class="pe-2">
@@ -239,7 +285,7 @@ function dale6_com_echo_comment($comments, $post, $user, $is_children = false)
                                     <?php
                                     // 显示评论的回复链接，已打开必须注册才能回复，未登录
                                     if (get_option('comment_registration') && !$is_login) {
-                                        echo '<a rel="nofollow" class="btn btn-link btn-sm ps-0" data-bs-toggle="modal" data-bs-target="#exampleModal">' . __('登录后回复', 'dake6_com') . '</a>';
+                                        echo '<a rel="nofollow" class="btn btn-link btn-sm ps-0" data-bs-toggle="modal" data-bs-target="#exampleModal">' . __('登录后回复', 'dale6_com') . '</a>';
                                     } else {
                                         echo sprintf(
                                             "<a rel='nofollow' class='btn btn-link btn-sm' href='%s' aria-label='%s'>%s</a>",
@@ -254,14 +300,14 @@ function dale6_com_echo_comment($comments, $post, $user, $is_children = false)
                                                 )
                                             ) . '#respond',
                                             $comment->comment_author,
-                                            __('回复', 'dake6_com')
+                                            __('回复', 'dale6_com')
                                         );
                                     }
                                     ?>
                                 </span>
                                 <?php if ($is_login && $comment->user_id == $user->ID) : ?>
                                     <span class="text-muted">
-                                        <a rel="nofollow" class="btn btn-link btn-sm" href="<?= admin_url('comment.php?action=editcomment&amp;c=') . $comment->comment_ID ?>"><?php _e('编辑', 'dake6_com'); ?></a>
+                                        <a rel="nofollow" class="btn btn-link btn-sm" href="<?php echo admin_url('comment.php?action=editcomment&amp;c=') . $comment->comment_ID ?>"><?php _e('编辑', 'dale6_com'); ?></a>
                                     </span>
                                 <?php endif; ?>
                             </div>
@@ -289,20 +335,20 @@ add_action('dale6_com_top_or_down_button', function ($bool, $tval, $tid, $type) 
     $upico = '<svg class="bi bi-caret-up-fill" width="20" height="20" viewBox="0 0 18 18"><path d="M1 12h16L9 4l-8 8Z"></path></svg>';
     $doico = '<svg class="bi bi-caret-down-fill" width="20" height="20" viewBox="0 0 18 18"><path d="M1 6h16l-8 8-8-8Z"></path></svg>';
     if ($bool) : ?>
-        <button type="button" aria-label="<?= $ding ?>" class="btn btn-sm btn-outline-light pinglun_up" dale6_com_data="up" ty="<?php echo $type; ?>" tid="<?php echo $type; ?>-<?php echo $tid; ?>">
-            <?= $upico ?>
+        <button type="button" aria-label="<?php echo $ding ?>" class="btn btn-sm btn-outline-light pinglun_up" dale6_com_data="up" ty="<?php echo $type; ?>" tid="<?php echo $type; ?>-<?php echo $tid; ?>">
+            <?php echo $upico ?>
         </button>
         <span class="text-center px-2" id="<?php echo $type; ?>_top_sum-<?php echo $tid; ?>"><?php echo $tval; ?></span>
-        <button type="button" aria-label="<?= $cai ?>" class="btn btn-sm btn-outline-light pinglun_down" dale6_com_data="down" ty="<?php echo $type; ?>" tid="<?php echo $type; ?>-<?php echo $tid; ?>">
-            <?= $doico ?>
+        <button type="button" aria-label="<?php echo $cai ?>" class="btn btn-sm btn-outline-light pinglun_down" dale6_com_data="down" ty="<?php echo $type; ?>" tid="<?php echo $type; ?>-<?php echo $tid; ?>">
+            <?php echo $doico ?>
         </button>
     <?php else : ?>
-        <button type="button" aria-label="<?= $ding ?>" class="btn btn-sm btn-outline-light pinglun_up" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            <?= $upico ?>
+        <button type="button" aria-label="<?php echo $ding ?>" class="btn btn-sm btn-outline-light pinglun_up" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <?php echo $upico ?>
         </button>
         <span class="text-center px-2"><?php echo $tval; ?></span>
-        <button type="button" aria-label="<?= $cai ?>" class="btn btn-sm btn-outline-light pinglun_down" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            <?= $doico ?>
+        <button type="button" aria-label="<?php echo $cai ?>" class="btn btn-sm btn-outline-light pinglun_down" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <?php echo $doico ?>
         </button>
     <?php endif;
 }, 10, 4);
@@ -532,7 +578,7 @@ add_filter('login_headertext', function () {
 });
 
 add_filter('login_headerurl', function () {
-    return get_bloginfo('url');
+    return home_url();
 });
 
 // 文章编辑添加box
@@ -546,7 +592,7 @@ add_action('add_meta_boxes', function () {
                 <tr>
                     <th><label for="biaotibiaoqian"><?php _e('文章标题前缀', 'dale6_com') ?></label></th>
                     <td>
-                        <input name="biaotibiaoqian" id="biaotibiaoqian" type="text" value="<?= htmlentities(isset($seo_arr['biaotibiaoqian']) ? $seo_arr['biaotibiaoqian'] : '') ?>" class="regular-text">
+                        <input name="biaotibiaoqian" id="biaotibiaoqian" type="text" value="<?php echo htmlentities(isset($seo_arr['biaotibiaoqian']) ? $seo_arr['biaotibiaoqian'] : '') ?>" class="regular-text">
                         <p><?php _e('为空则不输出,一般用于原创转载识别,HTML格式,CSS框架[Bootstrap v5.3.0],点击例子:', 'dale6_com') ?>
                             <span class="badge bg-secondary add_biaotibiaoqian">原创</span>
                         </p>
@@ -555,14 +601,14 @@ add_action('add_meta_boxes', function () {
                 <tr>
                     <th><label for="seo_description"><?php _e('SEO简介说明', 'dale6_com') ?></label></th>
                     <td>
-                        <input name="seo_description" id="seo_description" type="text" value="<?= isset($seo_arr['seo_description']) ? $seo_arr['seo_description'] : '' ?>" class="regular-text">
+                        <input name="seo_description" id="seo_description" type="text" value="<?php echo isset($seo_arr['seo_description']) ? $seo_arr['seo_description'] : '' ?>" class="regular-text">
                         <p><?php _e('为空则输出文章前约180个字', 'dale6_com') ?></p>
                     </td>
                 </tr>
                 <tr>
                     <th><label for="seo_keywords"><?php _e('SEO关键字', 'dale6_com') ?></label></th>
                     <td>
-                        <input name="seo_keywords" id="seo_keywords" type="text" value="<?= isset($seo_arr['seo_keywords']) ? $seo_arr['seo_keywords'] : '' ?>" class="regular-text">
+                        <input name="seo_keywords" id="seo_keywords" type="text" value="<?php echo isset($seo_arr['seo_keywords']) ? $seo_arr['seo_keywords'] : '' ?>" class="regular-text">
                         <p><?php _e('为空则输出文章标签', 'dale6_com') ?></p>
                     </td>
                 </tr>
@@ -673,7 +719,15 @@ if ($is_admin) {
             'dale6_com',
             'dale6_com_setting_section'
         );
-
+        
+        add_settings_field(
+            'dale6_com_yejiaotianjia',
+            __('页面最后添加HTML', 'dale6_com'),
+            'dale6_com_echo_yejiaotianjia',
+            'dale6_com',
+            'dale6_com_setting_section'
+        );
+        
         add_settings_field(
             'dale6_com_email_username',
             __('邮箱SMTP设置', 'dale6_com'),
@@ -821,7 +875,7 @@ function dale6_com_echo_yetoutianjia()
 {
     global $options;
 ?>
-    <p><?php _e('在页头添加HTML,一般用于添加相关 meta,ling 等', 'dale6_com') ?></p>
+    <p><?php _e('在页头添加HTML,一般用于添加 meta,link 标签代码', 'dale6_com') ?></p>
     <textarea name="dale6_com_setting[yetoutianjia]" class="regular-text" rows="6"><?php echo isset($options['yetoutianjia']) ? $options['yetoutianjia'] : ''; ?></textarea>
 <?php
 }
@@ -829,8 +883,16 @@ function dale6_com_echo_yejiaozhuijia()
 {
     global $options;
 ?>
-    <p><?php _e('在页脚最后添加HTML,一般用于添加备案的a链接', 'dale6_com') ?></p>
+    <p><?php _e('在页脚添加HTML,一般用于添加备案的a链接', 'dale6_com') ?></p>
     <textarea name="dale6_com_setting[yejiaozhuijia]" class="regular-text" rows="6"><?php echo isset($options['yejiaozhuijia']) ? $options['yejiaozhuijia'] : ''; ?></textarea>
+<?php
+}
+function dale6_com_echo_yejiaotianjia()
+{
+    global $options;
+?>
+    <p><?php _e('在HTML最后添加HTML,一般用于添加 script 标签代码', 'dale6_com') ?></p>
+    <textarea name="dale6_com_setting[yejiaotianjia]" class="regular-text" rows="6"><?php echo isset($options['yejiaotianjia']) ? $options['yejiaotianjia'] : ''; ?></textarea>
 <?php
 }
 

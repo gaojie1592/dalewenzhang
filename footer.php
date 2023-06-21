@@ -58,3 +58,7 @@
     });
 </script>
 <?php wp_footer() ?>
+<?php global $options; ?>
+<?php if (isset($options['yejiaotianjia']) && !empty($options['yejiaotianjia'])) : ?>
+    <?php echo $options['yejiaotianjia']; ?>
+<?php endif; ?>
