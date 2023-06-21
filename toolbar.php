@@ -1,7 +1,11 @@
 <?php global $user_ID; ?>
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="<?php bloginfo('url'); ?>"><?php echo $sitename = get_bloginfo('name', 'display'); ?></a>
+        <?php if (has_custom_logo()) : ?>
+            <?php echo get_custom_logo() ?>
+        <?php else : ?>
+            <a class="navbar-brand fw-bold" href="<?php bloginfo('url'); ?>"><?php echo $sitename = get_bloginfo('name', 'display'); ?></a>
+        <?php endif; ?>
         <button class="navbar-toggler" type="button" aria-label="<?php _e('打开菜单', 'dale6_com') ?>" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>

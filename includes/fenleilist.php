@@ -1,4 +1,4 @@
-<nav class="bg-white vstack sticky-top d-flex">
+<nav class="bg-white vstack sticky-top d-flex rounded">
     <ul class="navbar-nav leftlist itemlist flex-column">
         <?php
         wp_nav_menu(array(

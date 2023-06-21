@@ -23,20 +23,20 @@ $options = get_option('dale6_com_setting');
 
 function theme_setup()
 {
-    /** automatic feed link*/
+    // 该功能在HTML <head>中增加了RSS提要链接
     add_theme_support('automatic-feed-links');
-    /** tag-title **/
+    // 在自定义主题里可定义项上显示标签
     add_theme_support('title-tag');
-    /** post formats */
-    $post_formats = array('aside', 'image', 'gallery', 'video', 'audio', 'link', 'quote', 'status');
-    add_theme_support('post-formats', $post_formats);
+    // 添加文章格式支持   get_post_format( $post->ID )就能确定文章所属格式    has_post_format( 'video' )
+    // $post_formats = array('aside', 'image', 'gallery', 'video', 'audio', 'link', 'quote', 'status');
+    // add_theme_support('post-formats', $post_formats);
     // 开启文章特色图
     add_theme_support('post-thumbnails');
     /** HTML5 support **/
-    add_theme_support('html5', array('comment-list', 'comment-form', 'search-form', 'gallery', 'caption','script', 'style'));
-    /** refresh widgest **/
-    add_theme_support('customize-selective-refresh-widgets');
-    /** custom background **/
+    add_theme_support('html5', array('comment-list', 'comment-form', 'search-form', 'gallery', 'caption', 'script', 'style'));
+    // 这个功能可以让在定制器中管理的小部件有选择地刷新。这个功能在WordPress 4.5中是可用的。
+    // add_theme_support('customize-selective-refresh-widgets');
+    // 自定义背景
     $bg_defaults = array(
         'default-image'          => '',
         'default-preset'         => 'default',
@@ -45,26 +45,10 @@ function theme_setup()
         'default-attachment'     => 'scroll',
     );
     add_theme_support('custom-background', $bg_defaults);
-    /** custom header **/
-    $header_defaults = array(
-        'default-image'          => '',
-        'width'                  => 300,
-        'height'                 => 60,
-        'flex-height'            => true,
-        'flex-width'             => true,
-        'default-text-color'     => '',
-        'header-text'            => true,
-        'uploads'                => true,
-    );
-    add_theme_support('custom-header', $header_defaults);
-    /** custom log **/
-    add_theme_support('custom-logo', array(
-        'height'      => 60,
-        'width'       => 400,
-        'flex-height' => true,
-        'flex-width'  => true,
-        'header-text' => array('site-title', 'site-description'),
-    ));
+    // 自定义页头
+    add_theme_support('custom-header');
+    // 自定义logo
+    add_theme_support('custom-logo');
 }
 add_action('after_setup_theme', 'theme_setup');
 
@@ -719,7 +703,7 @@ if ($is_admin) {
             'dale6_com',
             'dale6_com_setting_section'
         );
-        
+
         add_settings_field(
             'dale6_com_yejiaotianjia',
             __('页面最后添加HTML', 'dale6_com'),
@@ -727,7 +711,7 @@ if ($is_admin) {
             'dale6_com',
             'dale6_com_setting_section'
         );
-        
+
         add_settings_field(
             'dale6_com_email_username',
             __('邮箱SMTP设置', 'dale6_com'),
