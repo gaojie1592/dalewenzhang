@@ -85,6 +85,13 @@
 				<?php get_template_part('tools/page_yema'); ?>
 			</div>
 		</div>
+		<script>
+			dale6_addLoadEvent(function() {
+				document.getElementById('charudaima').addEventListener('click', function(e) {
+					document.getElementById('comment').value = document.getElementById('comment').value + '<code>//<?php _e('代码', 'dale6_com'); ?></code>';
+				});
+			});
+		</script>
 	<?php endif; ?>
 
 	<?php if (!comments_open()) : ?>
@@ -122,13 +129,6 @@
 			),
 		));
 		?>
-		<script>
-			dale6_addLoadEvent(function() {
-				document.getElementById('charudaima').addEventListener('click', function(e) {
-					document.getElementById('comment').value = document.getElementById('comment').value + '<code>//<?php _e('代码', 'dale6_com'); ?></code>';
-				});
-			});
-		</script>
 	<?php endif; ?>
 </div>
 <script>
