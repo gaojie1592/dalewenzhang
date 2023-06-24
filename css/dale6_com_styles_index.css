@@ -21,6 +21,10 @@ body {
     min-width: 80px !important;
 }
 
+.dsw-60 {
+    min-width: 60px !important;
+}
+
 a,
 .dl_a,
 .dl_a>a,

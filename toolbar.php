@@ -32,7 +32,7 @@
 
                     <?php if (!$user_ID) : ?>
                         <li class="nav-item ps-2 pt-lg-0 pt-2">
-                            <button type="button" class="btn btn-outline-dark lonin" data-bs-toggle="modal" data-bs-target="#exampleModal"><?php echo __('登录', 'dale6_com') ?></span></button>
+                            <button type="button" class="btn btn-outline-dark dsw-60" data-bs-toggle="modal" data-bs-target="#exampleModal"><?php echo __('登录', 'dale6_com') ?></span></button>
                         </li>
                     <?php else : ?>
                         <li class="nav-item ps-2 pt-lg-0 pt-2 dropdown">

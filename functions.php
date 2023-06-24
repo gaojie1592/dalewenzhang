@@ -20,15 +20,11 @@ define('DALE6_COM_POST_TOP', 'dale6_com_post_top');
 // 评论点赞数标记
 define('DALE6_COM_COMMENT_TOP', 'dale6_com_comment_top');
 
-// 加载多语言
-// add_action('after_setup_theme', 'wpdocs_theme_setup'); 
-// function wpdocs_theme_setup(){
-//     load_theme_textdomain('wpdocs_theme', get_template_directory() . '/languages');
-// }
-
 
 function theme_setup()
 {
+    // 加载多语言
+    load_theme_textdomain( 'dale6_com', get_template_directory(). '/languages' );    
     // 该功能在HTML <head>中增加了RSS提要链接
     add_theme_support('automatic-feed-links');
     // 在自定义主题里可定义项上显示标签
