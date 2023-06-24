@@ -5,9 +5,11 @@ wp_nonce_field('ajaxpingluntop', 'dale6_com_ajaxpingluntop');
 $user = wp_get_current_user();
 // 是否已登录
 $is_login = $user->exists();
-dale6_com_add_views();
+// 如果有页面参数则不记录页面查看次数
+if (!isset($_GET['page'])) dale6_com_add_views();
+
 while (have_posts()) : the_post(); ?>
-    <div id="post-<?php the_ID()?>" <?php post_class('card border-0 bg-white');?>>
+    <div id="post-<?php the_ID() ?>" <?php post_class('card border-0 bg-white'); ?>>
         <div class="card-body">
             <?php
             $seo_arr = get_post_meta($post->ID, 'dale6_com_post_seo', true);
@@ -48,10 +50,24 @@ while (have_posts()) : the_post(); ?>
                 </div>
             </div>
             <?php if (has_post_thumbnail()) the_post_thumbnail(); ?>
-            <?php echo dale6_the_content($post->post_content); ?>
+            <?php the_content(); ?>
 
+            <?php
+            $next_a = wp_link_pages(array(
+                'before'           => '',
+                'after'            => '',
+                'next_or_number'   => 'next',
+                'echo'             => false,
+                'nextpagelink'     => __('下一页', 'dale6_com'),
+                'previouspagelink' => __('上一页', 'dale6_com'),
+            )); ?>
+            <?php if (!empty($next_a)) : ?>
+                <div class="d-grid gap-2">
+                    <?php echo preg_replace("/class=\".*?\"/", 'class="btn btn-sm border w-100 bg-secondary-subtle"', $next_a) ?>
+                </div>
+            <?php endif; ?>
             <?php $link = esc_url(apply_filters('the_permalink', get_permalink($post), $post)); ?>
-            <div class="alert alert-secondary">
+            <div class="alert alert-secondary mt-3">
                 <?php if (isset($options['wenzhangzhuijia']) && !empty($options['wenzhangzhuijia'])) : ?>
                     <?php echo $options['wenzhangzhuijia']; ?>
                 <?php endif; ?>
@@ -66,7 +82,7 @@ while (have_posts()) : the_post(); ?>
                 </div>
             <?php endif; ?>
 
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center justify-content-between">
                 <div class="pe-2">
                     <?php do_action('dale6_com_top_or_down_button', $is_login, $post_top_sum, $post->ID, 'post'); ?>
                 </div>
@@ -76,6 +92,7 @@ while (have_posts()) : the_post(); ?>
             </div>
 
         </div>
+
     </div>
 <?php endwhile; ?>
 <?php comments_template(); ?>

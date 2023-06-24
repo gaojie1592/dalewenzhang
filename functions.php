@@ -462,21 +462,6 @@ function dale6_com_echo_comment_b($comment, $args, $depth = '', $is_children = f
                                         'before'        => '',
                                         'after'         => '',
                                     )));
-                                    // echo sprintf(
-                                    //     "<a rel='nofollow' class='btn btn-link btn-sm' href='%s' aria-label='%s'>%s</a>",
-                                    //     esc_url(
-                                    //         add_query_arg(
-                                    //             array(
-                                    //                 'replytocom'      => $comment->comment_ID,
-                                    //                 'unapproved'      => false,
-                                    //                 'moderation-hash' => false,
-                                    //             ),
-                                    //             get_permalink($post->ID)
-                                    //         )
-                                    //     ) . '#respond',
-                                    //     $comment->comment_author,
-                                    //     __('回复', 'dale6_com')
-                                    // );
                                 }
                                 ?>
                             </span>
@@ -503,8 +488,8 @@ function dale6_com_echo_comment_b($comment, $args, $depth = '', $is_children = f
  * @return void  输出结果
  */
 add_action('dale6_com_top_or_down_button', function ($bool, $tval, $tid, $type) {
-    $ding = __('赞', 'dale6_com'); //Thumbs up
-    $cai = __('踩', 'dale6_com'); //Thumbs down
+    $ding = __('赞', 'dale6_com');
+    $cai = __('踩', 'dale6_com');
     $upico = '<svg class="bi bi-caret-up-fill" width="20" height="20" viewBox="0 0 18 18"><path d="M1 12h16L9 4l-8 8Z"></path></svg>';
     $doico = '<svg class="bi bi-caret-down-fill" width="20" height="20" viewBox="0 0 18 18"><path d="M1 6h16l-8 8-8-8Z"></path></svg>';
     if ($bool) : ?>
@@ -541,13 +526,13 @@ function to_zhuti_bianji_link()
     endif;
 }
 // 主要用来处理内容被分页显示不全，这个方法显示所有内容
-function dale6_the_content($post_content)
-{
-    $content = get_extended($post_content);
-    $content = $content['main'] . (!empty($content['extended']) ? $content['extended'] : '');
-    // $content = content_text_guolv($content['main'] . (!empty($content['extended']) ? $content['extended'] : ''));
-    return apply_filters('the_content', $content);
-}
+// function dale6_the_content($post_content)
+// {
+//     $content = get_extended($post_content);
+//     $content = $content['main'] . (!empty($content['extended']) ? $content['extended'] : '');
+//     // $content = content_text_guolv($content['main'] . (!empty($content['extended']) ? $content['extended'] : ''));
+//     return apply_filters('the_content', $content);
+// }
 // 返回详细距离时间 get_option('gmt_offset')获取时区间隔int
 function jiange_time($qianzui, $date, $houzui)
 {

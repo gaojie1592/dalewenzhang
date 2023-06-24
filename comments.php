@@ -7,7 +7,20 @@
 					'callback' => 'dale6_com_echo_comment',
 				)); ?>
 			</ul>
-			<?php get_template_part('tools/page_yema'); ?>
+			<?php $pag_arr = paginate_comments_links(array(
+				'next_text'  => __('下一页', 'dale6_com'),
+				'prev_text'  => __('上一页', 'dale6_com'),
+				'type'       => 'array',
+			)); ?>
+			<?php if (is_array($pag_arr) && count($pag_arr) > 0) : ?>
+				<nav id="page_ym" class="pt-3">
+					<ul class="pagination">
+						<?php foreach ($pag_arr as $v) {
+							echo '<li class="page-item">', str_ireplace("page-numbers", "page-link text-dark", $v), '</li>';
+						} ?>
+					</ul>
+				</nav>
+			<?php endif ?>
 		</div>
 	</div>
 
