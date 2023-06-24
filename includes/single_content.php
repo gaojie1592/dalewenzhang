@@ -36,7 +36,7 @@ while (have_posts()) : the_post(); ?>
             </div>
             <div class="card-text d-flex align-items-center py-3 mb-3 border-bottom">
                 <div class="flex-shrink-0 dale6_com_user_ico">
-                    <img src="<?php echo get_template_directory_uri(); ?>/img/noavatar.svg" data-src="<?php echo get_avatar_url($post->post_author, array('size' => 40)) ?>" width="40" height="40" alt="<?php echo dale6_com_get_display_name($post) ?>">
+                    <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/noavatar.svg" data-src="<?php echo get_avatar_url($post->post_author, array('size' => 40)) ?>" width="40" height="40" alt="<?php echo dale6_com_get_display_name($post) ?>">
                 </div>
                 <div class="flex-grow-1 d-flex flex-column ms-3">
                     <div class="d-flex">

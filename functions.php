@@ -376,7 +376,7 @@ function dale6_com_echo_comment($comment, $args, $depth)
                 </div>
 
                 <div class="ps-2">
-                    <?php edit_comment_link(__('编辑'), '<span class="text-muted">', '</span>'); ?>
+                    <?php edit_comment_link(__('编辑', 'dale6_com'), '<span class="text-muted">', '</span>'); ?>
                     <span class="text-muted">
                         <?php comment_reply_link(array_merge($args, array(
                             'add_below' => $add_below,

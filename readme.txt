@@ -1,5 +1,5 @@
 === dale6 ===
-Contributors: gaojie11
+Contributors: gaojie11@163.com
 Requires at least: 6.1
 Tested up to: 6.2
 Requires PHP: 5.6
@@ -9,20 +9,29 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-dale6 大乐文章主题是个快速,干净,简约,急速,现代的多功能WordPress主题。 主题演示：https://www.dale6.com
+dale6_com 主题是个快速,干净,简约,急速,现代的多功能WordPress主题。 主题演示：https://www.dale6.com
 
 
 == Copyright ==
 
-dale6 WordPress Theme, (C) 2022-2023 WordPress.org
-dale6 is distributed under the terms of the GNU GPL.
+dale6_com WordPress Theme, Copyright 2023 dale6.com
+dale6_com is distributed under the terms of the GNU GPL.
 
-This program is free software: you can redistribute it and/or modify
+This file is part of dale6_com
+
+dale6_com is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 2 of the License, or
 (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
+dale6_com is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
+
+dale6_com 主题使用了 Bootstrap 前端框架
+
+Bootstrap
+copyright 2011–2023 the Bootstrap Authors.
+License: MIT License, https://opensource.org/licenses/MIT
+https://github.com/twbs/bootstrap
