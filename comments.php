@@ -1,98 +1,15 @@
 <div id="comments">
-	<?php
-	// 是否已登录
-	$user = wp_get_current_user();
-	// 是否已登录
-	$is_login = $user->exists();
-	// 返回所有评论与对应作者以及meta dale6_com_comment_top 是有点赞的评论
-	global $wpdb, $table_prefix;
-	$sql = "SELECT * FROM `{$table_prefix}comments` left join `{$table_prefix}commentmeta` on (`{$table_prefix}comments`.`comment_ID`=`{$table_prefix}commentmeta`.`comment_id` AND `{$table_prefix}commentmeta`.`meta_key`='dale6_com_comment_top') left join `{$table_prefix}users` on (`{$table_prefix}comments`.`user_id`=`{$table_prefix}users`.`ID`) where `{$table_prefix}comments`.`comment_post_id`={$post->ID} GROUP BY `{$table_prefix}comments`.`comment_ID`";
-	$comments = $wpdb->get_results($sql);
-	//获取主评论总数量
-	$cnt = count($comments);
-	if ($cnt > 0) :
-		// 评论分级与排列
-		$comments_a = $comments_b = $comments_c = array();
-		foreach ($comments as $k => $v) {
-			// 修改转载pingback和trackback的评论格式
-			if ($v->comment_type == 'pingback' || $v->comment_type == 'trackback') {
-				$v->comment_content = apply_filters('dale6_pingback_or_trackback_comment_content', $v);
-				$v->display_name = apply_filters('dale6_pingback_or_trackback_display_name', $v);
-			}
-			if (!empty($v->meta_value)) {
-				$v->meta_value = array_sum(unserialize($v->meta_value));
-			} else {
-				$v->meta_value = 0;
-			}
-			if ($v->comment_parent == '0') {
-				$comments_a[$v->comment_ID] = $v;
-			} else {
-				$comments_b[$v->comment_ID] = $v;
-			}
-		}
-		unset($comments);
-		// 挂钩子评论
-		foreach ($comments_b as $v) {
-			$comments_a = dale6_com_add_comment_children($comments_a, $v);
-		}
-		// 按照点赞排序
-		$comments = array();
-		if (count($comments_a) > 1) {
-			while (1) {
-				foreach ($comments_a as $k => $v) {
-					if (isset($tmps)) {
-						if ($tmps->meta_value < $v->meta_value) {
-							$tmps = $v;
-						}
-					} else {
-						$tmps = $v;
-					}
-				}
-				$comments[] = isset($tmps) ? $tmps : ($tmps = current($comments_a));
-				unset($comments_a[$tmps->comment_ID]);
-				unset($tmps);
-				if (count($comments_a) == 1) {
-					$comments[] = array_shift($comments_a);
-					break;
-				}
-			}
-		} else {
-			$comments[] = current($comments_a);
-		}
-		// 是否分页
-		$pcs = get_option('page_comments');
-		// 如果分页拿出当前页评论数据
-		if ($pcs) {
-			//获取当前评论列表页码
-			$page = (int)get_query_var('cpage');
-			//获取每页评论显示数量
-			$per_page = (int) get_query_var('comments_per_page');
-			if (0 === $per_page) {
-				$per_page = (int) get_option('comments_per_page');
-			}
-			//总页数
-			$zct = ceil($cnt / $per_page);
-			// 分页获取数据
-			$comments = array_slice($comments, ($page - 1) * $per_page, $per_page);
-		}
-	?>
-		<div class="card border-0 bg-white mb-3">
-			<div class="card-body">
-				<h5 class="card-title"><?php echo $cnt . __('条评论', 'dale6_com'); ?></h5>
-
-				<?php dale6_com_echo_comment($comments, $post, $user); ?>
-
-				<?php get_template_part('tools/page_yema'); ?>
-			</div>
+	<div class="card border-0 bg-white mb-3">
+		<div class="card-body">
+			<h5 class="card-title"><?php echo get_comments_number() . __('条评论', 'dale6_com'); ?></h5>
+			<ul class="list-group list-group-flush">
+				<?php wp_list_comments(array(
+					'callback' => 'dale6_com_echo_comment',
+				)); ?>
+			</ul>
+			<?php get_template_part('tools/page_yema'); ?>
 		</div>
-		<script>
-			dale6_addLoadEvent(function() {
-				document.getElementById('charudaima').addEventListener('click', function(e) {
-					document.getElementById('comment').value = document.getElementById('comment').value + '<code>//<?php _e('代码', 'dale6_com'); ?></code>';
-				});
-			});
-		</script>
-	<?php endif; ?>
+	</div>
 
 	<?php if (!comments_open()) : ?>
 		<div class="card border-0 bg-white mb-3">
@@ -129,6 +46,13 @@
 			),
 		));
 		?>
+		<script>
+			dale6_addLoadEvent(function() {
+				document.getElementById('charudaima').addEventListener('click', function(e) {
+					document.getElementById('comment').value = document.getElementById('comment').value + '<code>//<?php _e('代码', 'dale6_com'); ?></code>';
+				});
+			});
+		</script>
 	<?php endif; ?>
 </div>
 <script>

@@ -7,7 +7,7 @@ $user = wp_get_current_user();
 $is_login = $user->exists();
 dale6_com_add_views();
 while (have_posts()) : the_post(); ?>
-    <div class="card border-0 bg-white">
+    <div id="post-<?php the_ID()?>" <?php post_class('card border-0 bg-white');?>>
         <div class="card-body">
             <?php
             $seo_arr = get_post_meta($post->ID, 'dale6_com_post_seo', true);
@@ -21,7 +21,7 @@ while (have_posts()) : the_post(); ?>
                 </span>
                 <span class="dale6_svg_up wh-16px px-2"></span>
                 <span class="text-muted fw-light mx-2">
-                    <?php $post_top_sum = apply_filters('dale6_com_post_top', $post->ID); ?>
+                    <?php $post_top_sum = apply_filters(DALE6_COM_POST_TOP, $post->ID); ?>
                     <?php echo $post_top_sum; ?>
                 </span>
                 <span class="dale6_svg_pinglun wh-16px px-2"></span>

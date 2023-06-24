@@ -4,7 +4,7 @@
         <?php if (has_custom_logo()) : ?>
             <?php echo get_custom_logo() ?>
         <?php else : ?>
-            <a class="navbar-brand fw-bold" href="<?php bloginfo('url'); ?>"><?php echo $sitename = get_bloginfo('name', 'display'); ?></a>
+            <a class="navbar-brand fw-bold" href="<?php echo esc_url(home_url()); ?>"><?php echo $sitename = get_bloginfo('name', 'display'); ?></a>
         <?php endif; ?>
         <button class="navbar-toggler" type="button" aria-label="<?php _e('打开菜单', 'dale6_com') ?>" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
             <span class="navbar-toggler-icon"></span>
@@ -39,13 +39,13 @@
                             <?php global $user_identity; ?>
                             <button type="button" class="btn btn-outline-dark dropdown-toggle d-flex" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="me-2 dale6_com_user_ico">
-                                    <img src="<?php echo get_template_directory_uri(); ?>/img/noavatar.svg" data-src="<?php echo get_avatar_url($user_ID, array('size' => 24)) ?>" width="24" height="24" alt="<?php echo $user_identity; ?>">
+                                    <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/noavatar.svg" data-src="<?php echo get_avatar_url($user_ID, array('size' => 24)) ?>" width="24" height="24" alt="<?php echo $user_identity; ?>">
                                 </span>
                                 <?php echo $user_identity ?>
                             </button>
                             <ul class="dropdown-menu">
                                 <li class="nav-item">
-                                    <a class="nav-link px-2" href="<?php echo admin_url(); ?> ">
+                                    <a class="nav-link px-2" href="<?php echo esc_url(admin_url()); ?> ">
                                         <?php if (current_user_can('manage_options')) : ?>
                                             <?php _e('管理页面', 'dale6_com') ?>
                                         <?php else : ?>
@@ -54,7 +54,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link px-2" href="<?php echo wp_logout_url(this_url()) ?>"><?php _e('退出', 'dale6_com') ?></a>
+                                    <a class="nav-link px-2" href="<?php echo esc_url(wp_logout_url(this_url())) ?>"><?php _e('退出', 'dale6_com') ?></a>
                                 </li>
                             </ul>
                         </li>

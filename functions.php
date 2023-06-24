@@ -13,6 +13,12 @@ $g_dale6_com = get_theme_mods();
 // 默认头像背景颜色
 define('DALE6_COM_PINGLUN_TX_COLOR', array("#778ca3", "#F57F17", "#5ec162", "#9575CD", "#999", "#00BCD4", "#c57c3b", "#6D4C41", "#5C6BC0", "#FBC02D", "#45aaf2", "#757575", "#EF5350", "#7986CB", "#2bcbba", "#37474F", "#546E7A", "#00838F", "#FFD54F", "#607D8B"));
 $options = get_option('dale6_com_setting');
+// 文章浏览次数标记
+define('DALE6_COM_POST_VIEWS_COUNT', 'dale6_com_post_views_count');
+// 文章点赞数标价
+define('DALE6_COM_POST_TOP', 'dale6_com_post_top');
+// 评论点赞数标记
+define('DALE6_COM_COMMENT_TOP', 'dale6_com_comment_top');
 
 // 加载多语言
 // add_action('after_setup_theme', 'wpdocs_theme_setup'); 
@@ -56,10 +62,10 @@ add_action('after_setup_theme', 'theme_setup');
 if (!function_exists('dale6_com_script')) {
     function dale6_com_script()
     {
-        wp_enqueue_style('dale6_com_css_bootstrap', get_template_directory_uri() . "/css/bootstrap.min.css");
-        wp_enqueue_style('dale6_com_css_dale6', get_template_directory_uri() . "/css/dale6_com_styles_index.css");
-        wp_enqueue_script('dale6_com_js_bootstrap', get_template_directory_uri() . '/js/bootstrap.bundle.min.js');
-        wp_enqueue_script('dale6_com_js_index', get_template_directory_uri() . '/js/dale6_com_index.js');
+        wp_enqueue_style('dale6_com_css_bootstrap', esc_url(get_template_directory_uri()) . "/css/bootstrap.min.css");
+        wp_enqueue_style('dale6_com_css_dale6', esc_url(get_template_directory_uri()) . "/css/dale6_com_styles_index.css");
+        wp_enqueue_script('dale6_com_js_bootstrap', esc_url(get_template_directory_uri()) . '/js/bootstrap.bundle.min.js');
+        wp_enqueue_script('dale6_com_js_index', esc_url(get_template_directory_uri()) . '/js/dale6_com_index.js');
     }
 }
 add_action('wp_enqueue_scripts', 'dale6_com_script');
@@ -171,8 +177,8 @@ function pinglun_text($comment_text)
 }
 
 // 文章ID输出文章top
-add_filter('dale6_com_post_top', function ($postid) {
-    $tmp = get_post_meta($postid, 'dale6_com_post_top', true);
+add_filter(DALE6_COM_POST_TOP, function ($postid) {
+    $tmp = get_post_meta($postid, DALE6_COM_POST_TOP, true);
     if (!is_array($tmp)) $tmp = array();
     $post_top_sum = $tmp ? array_sum($tmp) : 0;
     return $post_top_sum;
@@ -215,95 +221,278 @@ function dale6_com_add_comment_children($comments, $comment)
     }
     return $comments;
 }
+function dale6_com_get_commment()
+{
+    // 返回所有评论与对应作者以及meta dale6_com_comment_top 是有点赞的评论
+    global $wpdb, $post, $table_prefix;
+    $sql = "SELECT * FROM `{$table_prefix}comments` left join `{$table_prefix}commentmeta` on (`{$table_prefix}comments`.`comment_ID`=`{$table_prefix}commentmeta`.`comment_id` AND `{$table_prefix}commentmeta`.`meta_key`='" . DALE6_COM_COMMENT_TOP . "') left join `{$table_prefix}users` on (`{$table_prefix}comments`.`user_id`=`{$table_prefix}users`.`ID`) where `{$table_prefix}comments`.`comment_post_id`={$post->ID} GROUP BY `{$table_prefix}comments`.`comment_ID`";
+    $comments = $wpdb->get_results($sql);
+    //获取主评论总数量
+    $cnt = count($comments);
+    if ($cnt > 0) {
+        // 评论分级与排列
+        $comments_a = $comments_b = $comments_c = array();
+        foreach ($comments as $k => $v) {
+            // 修改转载pingback和trackback的评论格式
+            if ($v->comment_type == 'pingback' || $v->comment_type == 'trackback') {
+                $v->comment_content = apply_filters('dale6_pingback_or_trackback_comment_content', $v);
+                $v->display_name = apply_filters('dale6_pingback_or_trackback_display_name', $v);
+            }
+            if (!empty($v->meta_value)) {
+                $v->meta_value = array_sum(unserialize($v->meta_value));
+            } else {
+                $v->meta_value = 0;
+            }
+            if ($v->comment_parent == '0') {
+                $comments_a[$v->comment_ID] = $v;
+            } else {
+                $comments_b[$v->comment_ID] = $v;
+            }
+        }
+        unset($comments);
+        // 挂钩子评论
+        foreach ($comments_b as $v) {
+            $comments_a = dale6_com_add_comment_children($comments_a, $v);
+        }
+        // 按照点赞排序
+        $comments = array();
+        if (count($comments_a) > 1) {
+            while (1) {
+                foreach ($comments_a as $k => $v) {
+                    if (isset($tmps)) {
+                        if ($tmps->meta_value < $v->meta_value) {
+                            $tmps = $v;
+                        }
+                    } else {
+                        $tmps = $v;
+                    }
+                }
+                $comments[] = isset($tmps) ? $tmps : ($tmps = current($comments_a));
+                unset($comments_a[$tmps->comment_ID]);
+                unset($tmps);
+                if (count($comments_a) == 1) {
+                    $comments[] = array_shift($comments_a);
+                    break;
+                }
+            }
+        } else {
+            $comments[] = current($comments_a);
+        }
+        // 是否分页
+        $pcs = get_option('page_comments');
+        // 如果分页拿出当前页评论数据
+        if ($pcs) {
+            //获取当前评论列表页码
+            $page = (int)get_query_var('cpage');
+            //获取每页评论显示数量
+            $per_page = (int) get_query_var('comments_per_page');
+            if (0 === $per_page) {
+                $per_page = (int) get_option('comments_per_page');
+            }
+            //总页数
+            $zct = ceil($cnt / $per_page);
+            // 分页获取数据
+            $comments = array_slice($comments, ($page - 1) * $per_page, $per_page);
+        }
+    }
+    return $comments;
+}
+/**
+ * 添加评论打分数据,方便评论列表输出
+ */
+function dale6_com_query_comment($comments)
+{
+    global $wpdb, $g_dale6_com;
+    if (empty($comments)) return $comments;
+    $comment_ids = array();
+    foreach ($comments as $k => $v) {
+        $comment_ids[$k] = $v->comment_ID;
+    }
+    $_comment_ids = implode(',', $comment_ids);
+    $sql = "SELECT * FROM `{$wpdb->commentmeta}` where `{$wpdb->commentmeta}`.`meta_key`='" . DALE6_COM_COMMENT_TOP . "' AND `{$wpdb->commentmeta}`.`comment_id` in (" . $_comment_ids . ");";
+    $comment_tops = $wpdb->get_results($sql);
+    if (count($comment_tops) == 0) {
+        return $comments;
+    }
+    foreach ($comment_tops as $v) {
+        if (!empty($v->meta_value)) {
+            $g_dale6_com['comments'][$v->comment_id][DALE6_COM_COMMENT_TOP] = array_sum(unserialize($v->meta_value));
+        }
+    }
+    return $comments;
+}
+add_filter('the_comments', 'dale6_com_query_comment');
 /**
  * 输出评论
  */
-function dale6_com_echo_comment($comments, $post, $user, $is_children = false)
+function dale6_com_echo_comment($comment, $args, $depth)
 {
-    $is_login = $user->exists();
-    foreach ($comments as $comment) :
-        $author = $comment->user_id == $post->post_author ? true : false;
+    global $post, $g_dale6_com;
+    $author = $comment->user_id == $post->post_author ? true : false;
+    if ('div' === $args['style']) {
+        $tag       = 'div';
+        $add_below = 'comment';
+    } else {
+        $tag       = 'li';
+        $add_below = 'div-comment';
+    }
+    echo '<' . $tag . ' ' . comment_class((empty($args['has_children']) ? '' : 'parent') . ' pt-3 border-top', null, null, false) . ' id="comment-' . get_comment_ID() . '">';
 ?>
-        <div id="comment-<?php echo $comment->comment_ID; ?>" class="pt-3 border-top<?php echo $is_children ? ' children' : '' ?>">
-            <div class="d-flex flex-column">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0 dale6_com_user_ico">
-                        <img src="<?php echo get_template_directory_uri(); ?>/img/noavatar.svg" data-src="<?php echo get_avatar_url($comment->user_id, array('size' => 40)) ?>" width="40" height="40" alt="<?php echo dale6_com_get_display_name($comment) ?>">
-                    </div>
-                    <div class="flex-grow-1 d-flex flex-column ms-3">
-                        <div class="d-flex">
-                            <div class="d-inline-block text-truncate w-150px">
-                                <?php if ('0' == $comment->comment_approved) : ?>
-                                    <?php _e('待审核', 'dale6_com') ?><?php _e('作者', 'dale6_com') ?>
-                                <?php else : ?>
-                                    <?php if ($comment->comment_type == 'pingback' || $comment->comment_type == 'trackback') : ?>
-                                        <?php echo mb_substr(dale6_com_get_display_name($comment), 0, 50, 'utf8'); ?>
-                                    <?php else : ?>
-                                        <a href="<?php echo get_author_posts_url($comment->user_id) ?>"><?php echo mb_substr(dale6_com_get_display_name($comment), 0, 50, 'utf8'); ?></a>
-                                    <?php endif; ?>
-                                <?php endif; ?>
-                            </div>
-                            <?php if ($author) : ?>
-                                <span class="badge rounded-pill text-bg-dark"><?php _e('作者', 'dale6_com') ?></span>
-                            <?php endif; ?>
-                        </div>
-                        <div class="text-muted lh-1">
-                            <?php echo jiange_time(__('评论于', 'dale6_com'), $comment->comment_date, __('前', 'dale6_com')) ?>
-                        </div>
-                    </div>
+    <?php if ('div' != $args['style']) echo '<div id="div-comment-' . get_comment_ID() . '" class="comment-body">'; ?>
+
+    <div class="d-flex align-items-center">
+
+        <div class="flex-shrink-0 dale6_com_user_ico">
+            <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/noavatar.svg" data-src="<?php echo get_avatar_url($comment->user_id, array('size' => 40)) ?>" width="40" height="40" alt="<?php echo dale6_com_get_display_name($comment) ?>">
+        </div>
+        <div class="flex-grow-1 d-flex flex-column ms-3">
+            <div class="d-flex">
+                <div class="d-inline-block text-truncate w-150px">
+                    <?php echo get_comment_author_link(); ?>
                 </div>
-                <div class="d-flex flex-column">
-                    <?php if ('0' == $comment->comment_approved) : ?>
-                        <div class="pt-3"><?php _e('您的评论正在等待审核.', 'dale6_com'); ?></div>
-                    <?php else : ?>
-                        <div class="pt-3 overflow-hidden comment-text">
-                            <a rel="nofollow" class="btn btn-sm border w-100 bg-secondary-subtle comment-btn" style="display:none;"><?php _e('评论过长,点击展开', 'dale6_com') ?><?php _e('展开', 'dale6_com') ?></a>
-                            <?php echo apply_filters('comment_text', $comment->comment_content) ?>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <div class="pe-2">
-                                <?php do_action('dale6_com_top_or_down_button', $is_login, $comment->meta_value, $comment->comment_ID, 'pinglun'); ?>
-                            </div>
-                            <div class="ps-2">
-                                <span class="text-muted">
-                                    <?php
-                                    // 显示评论的回复链接，已打开必须注册才能回复，未登录
-                                    if (get_option('comment_registration') && !$is_login) {
-                                        echo '<a rel="nofollow" class="btn btn-link btn-sm ps-0" data-bs-toggle="modal" data-bs-target="#exampleModal">' . __('登录后回复', 'dale6_com') . '</a>';
-                                    } else {
-                                        echo sprintf(
-                                            "<a rel='nofollow' class='btn btn-link btn-sm' href='%s' aria-label='%s'>%s</a>",
-                                            esc_url(
-                                                add_query_arg(
-                                                    array(
-                                                        'replytocom'      => $comment->comment_ID,
-                                                        'unapproved'      => false,
-                                                        'moderation-hash' => false,
-                                                    ),
-                                                    get_permalink($post->ID)
-                                                )
-                                            ) . '#respond',
-                                            $comment->comment_author,
-                                            __('回复', 'dale6_com')
-                                        );
-                                    }
-                                    ?>
-                                </span>
-                                <?php if ($is_login && $comment->user_id == $user->ID) : ?>
-                                    <span class="text-muted">
-                                        <a rel="nofollow" class="btn btn-link btn-sm" href="<?php echo admin_url('comment.php?action=editcomment&amp;c=') . $comment->comment_ID ?>"><?php _e('编辑', 'dale6_com'); ?></a>
-                                    </span>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    <?php endif; ?>
+                <?php if ($author) : ?>
+                    <span class="badge rounded-pill text-bg-dark"><?php _e('作者', 'dale6_com') ?></span>
+                <?php endif; ?>
+            </div>
+            <div class="text-muted lh-1">
+                <?php echo jiange_time(__('评论于', 'dale6_com'), get_comment_date(), __('前', 'dale6_com')) ?>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="d-flex flex-column">
+        <?php if ('0' == $comment->comment_approved) : ?>
+            <div class="pt-3"><?php _e('您的评论正在等待审核.', 'dale6_com'); ?></div>
+        <?php else : ?>
+            <div class="pt-3 overflow-hidden comment-text">
+                <a rel="nofollow" class="btn btn-sm border w-100 bg-secondary-subtle comment-btn" style="display:none;"><?php _e('评论过长,点击展开', 'dale6_com') ?><?php _e('展开', 'dale6_com') ?></a>
+                <?php comment_text(); ?>
+            </div>
+            <div class="d-flex align-items-center">
+
+                <div class="pe-2">
+                    <?php do_action('dale6_com_top_or_down_button', wp_get_current_user()->exists(), isset($g_dale6_com['comments'][get_comment_ID()][DALE6_COM_COMMENT_TOP]) ? $g_dale6_com['comments'][get_comment_ID()][DALE6_COM_COMMENT_TOP] : 0, $comment->comment_ID, 'pinglun'); ?>
+                </div>
+
+                <div class="ps-2">
+                    <?php edit_comment_link(__('编辑'), '<span class="text-muted">', '</span>'); ?>
+                    <span class="text-muted">
+                        <?php comment_reply_link(array_merge($args, array(
+                            'add_below' => $add_below,
+                            'depth'     => $depth,
+                            'max_depth' => $args['max_depth'],
+                        ))); ?>
+                    </span>
                 </div>
             </div>
-            <?php if (!empty($comment->children)) : ?>
-                <?php dale6_com_echo_comment($comment->children, $post, $user, true); ?>
-            <?php endif; ?>
+        <?php endif; ?>
+    </div>
+
+    <?php if ('div' != $args['style']) echo '</div>' ?>
+<?php
+}
+
+function dale6_com_echo_comment_b($comment, $args, $depth = '', $is_children = false)
+{
+    global $post;
+    // 当前评论是子评论
+    // if (!$args['has_children']) {
+    // }
+    // 是否已登录
+    // $user = wp_get_current_user();
+    // 是否已登录
+    // $is_login = $user->exists();
+    // foreach ($comments as $comment) :
+    // echo '<pre>';
+    // var_dump($comment);
+    $author = $comment->user_id == $post->post_author ? true : false;
+?>
+    <div id="comment-<?php echo $comment->comment_ID; ?>" class="pt-3 border-top<?php echo $is_children ? ' children' : '' ?>">
+        <div class="d-flex flex-column">
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0 dale6_com_user_ico">
+                    <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/noavatar.svg" data-src="<?php echo get_avatar_url($comment->user_id, array('size' => 40)) ?>" width="40" height="40" alt="<?php echo dale6_com_get_display_name($comment) ?>">
+                </div>
+                <div class="flex-grow-1 d-flex flex-column ms-3">
+                    <div class="d-flex">
+                        <div class="d-inline-block text-truncate w-150px">
+                            <?php if ('0' == $comment->comment_approved) : ?>
+                                <?php _e('待审核', 'dale6_com') ?><?php _e('作者', 'dale6_com') ?>
+                            <?php else : ?>
+                                <?php if ($comment->comment_type == 'pingback' || $comment->comment_type == 'trackback') : ?>
+                                    <?php echo mb_substr(dale6_com_get_display_name($comment), 0, 50, 'utf8'); ?>
+                                <?php else : ?>
+                                    <a href="<?php echo get_author_posts_url($comment->user_id) ?>"><?php echo mb_substr(dale6_com_get_display_name($comment), 0, 50, 'utf8'); ?></a>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+                        <?php if ($author) : ?>
+                            <span class="badge rounded-pill text-bg-dark"><?php _e('作者', 'dale6_com') ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="text-muted lh-1">
+                        <?php echo jiange_time(__('评论于', 'dale6_com'), $comment->comment_date, __('前', 'dale6_com')) ?>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-column">
+                <?php if ('0' == $comment->comment_approved) : ?>
+                    <div class="pt-3"><?php _e('您的评论正在等待审核.', 'dale6_com'); ?></div>
+                <?php else : ?>
+                    <div class="pt-3 overflow-hidden comment-text">
+                        <a rel="nofollow" class="btn btn-sm border w-100 bg-secondary-subtle comment-btn" style="display:none;"><?php _e('评论过长,点击展开', 'dale6_com') ?><?php _e('展开', 'dale6_com') ?></a>
+                        <?php echo apply_filters('comment_text', $comment->comment_content) ?>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="pe-2">
+                            <?php do_action('dale6_com_top_or_down_button', $is_login, $comment->dale6_com_comment_meta_value, $comment->comment_ID, 'pinglun'); ?>
+                        </div>
+                        <div class="ps-2">
+                            <span class="text-muted">
+                                <?php
+                                // 显示评论的回复链接，已打开必须注册才能回复，未登录
+                                if (get_option('comment_registration') && !$is_login) {
+                                    echo '<a rel="nofollow" class="btn btn-link btn-sm ps-0" data-bs-toggle="modal" data-bs-target="#exampleModal">' . __('登录后回复', 'dale6_com') . '</a>';
+                                } else {
+                                    comment_reply_link(array_merge($args, array(
+                                        // 'add_below' => $add_below,
+                                        'depth'     => $depth,
+                                        'max_depth' => isset($args['max_depth']) ? $args['max_depth'] : 0,
+                                        'before'        => '',
+                                        'after'         => '',
+                                    )));
+                                    // echo sprintf(
+                                    //     "<a rel='nofollow' class='btn btn-link btn-sm' href='%s' aria-label='%s'>%s</a>",
+                                    //     esc_url(
+                                    //         add_query_arg(
+                                    //             array(
+                                    //                 'replytocom'      => $comment->comment_ID,
+                                    //                 'unapproved'      => false,
+                                    //                 'moderation-hash' => false,
+                                    //             ),
+                                    //             get_permalink($post->ID)
+                                    //         )
+                                    //     ) . '#respond',
+                                    //     $comment->comment_author,
+                                    //     __('回复', 'dale6_com')
+                                    // );
+                                }
+                                ?>
+                            </span>
+                            <?php if ($is_login && $comment->user_id == $user->ID) : ?>
+                                <span class="text-muted">
+                                    <a rel="nofollow" class="btn btn-link btn-sm" href="<?php echo admin_url('comment.php?action=editcomment&amp;c=') . $comment->comment_ID ?>"><?php _e('编辑', 'dale6_com'); ?></a>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
-    <?php endforeach;
+    </div>
+    <?php //endforeach;
+
 }
 
 /**
@@ -443,9 +632,9 @@ function dale6_com_add_views()
     $post = get_post();
     $post_ID = $post->ID;
     if ($post_ID) {
-        $post_views = (int)get_post_meta($post_ID, 'post_views_count', true);
-        if (!update_post_meta($post_ID, 'post_views_count', ($post_views + 1))) {
-            add_post_meta($post_ID, 'post_views_count', 1, true);
+        $post_views = (int)get_post_meta($post_ID, DALE6_COM_POST_VIEWS_COUNT, true);
+        if (!update_post_meta($post_ID, DALE6_COM_POST_VIEWS_COUNT, ($post_views + 1))) {
+            add_post_meta($post_ID, DALE6_COM_POST_VIEWS_COUNT, 1, true);
         }
     }
 }
@@ -455,7 +644,7 @@ function dale6_com_the_views($echo = 0)
     if ($echo > 0) return $echo;
     $post = get_post();
     $post_ID = $post->ID;
-    $views = (int)get_post_meta($post_ID, 'post_views_count', true);
+    $views = (int)get_post_meta($post_ID, DALE6_COM_POST_VIEWS_COUNT, true);
     return $views;
 }
 function echo_dale6_com_the_views($echo = 0)
@@ -1022,9 +1211,9 @@ function dale6_com_ajax_pingluntop()
     $tmp = explode($lx . '-', $_POST['cid'], 2);
     $comment_id = (int)$tmp[1];
     if ($lx == 'post') {
-        $comment_arr = get_post_meta($comment_id, 'dale6_com_post_top', true);
+        $comment_arr = get_post_meta($comment_id, DALE6_COM_POST_TOP, true);
     } else {
-        $comment_arr = get_comment_meta($comment_id, 'dale6_com_comment_top', true);
+        $comment_arr = get_comment_meta($comment_id, DALE6_COM_COMMENT_TOP, true);
     }
     if (!is_array($comment_arr)) {
         $comment_arr = array();
@@ -1041,9 +1230,9 @@ function dale6_com_ajax_pingluntop()
         $comment_arr = array();
     }
     if ($lx == 'post') {
-        update_post_meta($comment_id, 'dale6_com_post_top', $comment_arr);
+        update_post_meta($comment_id, DALE6_COM_POST_TOP, $comment_arr);
     } else {
-        update_comment_meta($comment_id, 'dale6_com_comment_top', $comment_arr);
+        update_comment_meta($comment_id, DALE6_COM_COMMENT_TOP, $comment_arr);
     }
     $comment_top_sum = array_sum($comment_arr);
     wp_send_json_success(array('c' => 200, 'ms' => $ms, 'data' => array('sum' => $comment_top_sum, 'cid' => $comment_id)), 200);
