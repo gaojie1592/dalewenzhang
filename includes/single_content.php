@@ -30,7 +30,7 @@ while (have_posts()) : the_post(); ?>
                     <?php echo $post->comment_count; ?>
                 </span>
                 <?php if ($user->ID == $post->post_author) : ?>
-                    <span class="text-muted pe-2"><a rel="nofollow" href="<?php echo admin_url('post.php?action=edit&post=') . $post->ID ?>"><?php echo __('编辑', 'dale6_com'); ?></a></span>
+                    <span class="text-muted pe-2"><a rel="nofollow" href="<?php echo admin_url('post.php?action=edit&post=') . $post->ID ?>"><?php echo __('编辑', 'dalewenzhang'); ?></a></span>
                 <?php endif; ?>
             </div>
             <div class="card-text d-flex align-items-center py-3 mb-3 border-bottom">
@@ -44,7 +44,7 @@ while (have_posts()) : the_post(); ?>
                         </div>
                     </div>
                     <div class="text-muted lh-1">
-                        <?php echo jiange_time(__('发表于', 'dale6_com'), $post->post_date, __('前', 'dale6_com')) ?>
+                        <?php echo jiange_time(__('发表于', 'dalewenzhang'), $post->post_date, __('前', 'dalewenzhang')) ?>
                     </div>
                 </div>
             </div>
@@ -57,8 +57,8 @@ while (have_posts()) : the_post(); ?>
                 'after'            => '',
                 'next_or_number'   => 'next',
                 'echo'             => false,
-                'nextpagelink'     => __('下一页', 'dale6_com'),
-                'previouspagelink' => __('上一页', 'dale6_com'),
+                'nextpagelink'     => __('下一页', 'dalewenzhang'),
+                'previouspagelink' => __('上一页', 'dalewenzhang'),
             )); ?>
             <?php if (!empty($next_a)) : ?>
                 <div class="d-grid gap-2">
@@ -70,7 +70,7 @@ while (have_posts()) : the_post(); ?>
                 <?php if (isset($options['wenzhangzhuijia']) && !empty($options['wenzhangzhuijia'])) : ?>
                     <?php echo $options['wenzhangzhuijia']; ?>
                 <?php endif; ?>
-                <p class="text-muted mb-0"><?php _e('本文链接: ', 'dale6_com') ?><a href="<?php echo $link; ?>"><?php echo $link; ?></a></p>
+                <p class="text-muted mb-0"><?php _e('本文链接: ', 'dalewenzhang') ?><a href="<?php echo $link; ?>"><?php echo $link; ?></a></p>
             </div>
             <?php if ($post_tags = get_the_tags()) : ?>
                 <div class="d-flex align-items-center pb-3">
@@ -86,7 +86,7 @@ while (have_posts()) : the_post(); ?>
                     <?php do_action('dale6_com_top_or_down_button', $is_login, $post_top_sum, $post->ID, 'post'); ?>
                 </div>
                 <span class="pe-2 text-muted">
-                    <?php echo __('最后修改:', 'dale6_com'), jiange_time('', $post->post_modified, __('前', 'dale6_com')) ?>
+                    <?php echo __('最后修改:', 'dalewenzhang'), jiange_time('', $post->post_modified, __('前', 'dalewenzhang')) ?>
                 </span>
             </div>
 

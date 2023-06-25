@@ -9,13 +9,13 @@ wp_nonce_field('ajaxpingluntop', 'dale6_com_ajaxpingluntop');
         <?php else : ?>
             <a class="navbar-brand fw-bold" href="<?php echo esc_url(home_url()); ?>"><?php echo $sitename = get_bloginfo('name', 'display'); ?></a>
         <?php endif; ?>
-        <button class="navbar-toggler" type="button" aria-label="<?php _e('打开菜单', 'dale6_com') ?>" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+        <button class="navbar-toggler" type="button" aria-label="<?php _e('打开菜单', 'dalewenzhang') ?>" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title" id="offcanvasNavbarLabel"><?php echo $sitename ?></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="<?php _e('关闭菜单', 'dale6_com') ?>"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="<?php _e('关闭菜单', 'dalewenzhang') ?>"></button>
             </div>
             <div class="offcanvas-body d-flex">
                 <ul class="navbar-nav itemlist flex-grow-1 flex-wrap">
@@ -35,7 +35,7 @@ wp_nonce_field('ajaxpingluntop', 'dale6_com_ajaxpingluntop');
 
                     <?php if (!$user_ID) : ?>
                         <li class="nav-item ps-2 pt-lg-0 pt-2">
-                            <button type="button" class="btn btn-outline-dark dsw-60" data-bs-toggle="modal" data-bs-target="#exampleModal"><?php echo __('登录', 'dale6_com') ?></span></button>
+                            <button type="button" class="btn btn-outline-dark dsw-60" data-bs-toggle="modal" data-bs-target="#exampleModal"><?php echo __('登录', 'dalewenzhang') ?></span></button>
                         </li>
                     <?php else : ?>
                         <li class="nav-item ps-2 pt-lg-0 pt-2 dropdown">
@@ -50,14 +50,14 @@ wp_nonce_field('ajaxpingluntop', 'dale6_com_ajaxpingluntop');
                                 <li class="nav-item">
                                     <a class="nav-link px-2" href="<?php echo esc_url(admin_url()); ?> ">
                                         <?php if (current_user_can('manage_options')) : ?>
-                                            <?php _e('管理页面', 'dale6_com') ?>
+                                            <?php _e('管理页面', 'dalewenzhang') ?>
                                         <?php else : ?>
-                                            <?php _e('个人资料', 'dale6_com') ?>
+                                            <?php _e('个人资料', 'dalewenzhang') ?>
                                         <?php endif; ?>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link px-2" href="<?php echo esc_url(wp_logout_url(this_url())) ?>"><?php _e('退出', 'dale6_com') ?></a>
+                                    <a class="nav-link px-2" href="<?php echo esc_url(wp_logout_url(this_url())) ?>"><?php _e('退出', 'dalewenzhang') ?></a>
                                 </li>
                             </ul>
                         </li>

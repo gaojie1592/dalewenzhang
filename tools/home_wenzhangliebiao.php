@@ -13,7 +13,7 @@ if (is_array($sticky_posts) && count($sticky_posts) > 0) $sticky_posts = array_f
             <?php $seo_arr = get_post_meta($post->ID, 'dale6_com_post_seo', true); ?>
             <a class="dl_a stretched-link text-decoration-none" href="<?php the_permalink(); ?>">
                 <?php if (isset($sticky_posts[$post->ID])) : ?>
-                    <span class="badge bg-info"><?php _e('置顶', 'dale6_com') ?></span>
+                    <span class="badge bg-info"><?php _e('置顶', 'dalewenzhang') ?></span>
                 <?php endif; ?>
                 <?php echo isset($seo_arr['biaotibiaoqian']) ? $seo_arr['biaotibiaoqian'] : '' ?>
                 <?php echo mb_strimwidth(strip_tags(apply_filters('dale6_com_the_title', get_the_title())), 0, 34, "..."); ?>

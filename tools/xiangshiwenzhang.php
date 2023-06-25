@@ -1,6 +1,6 @@
 <div class="card border-0 bg-white mb-3">
     <div class="card-body">
-        <p class="card-title"><?php _e('相似文章', 'dale6_com'); ?></p>
+        <p class="card-title"><?php _e('相似文章', 'dalewenzhang'); ?></p>
         <?php $post_num = 8;
         $exclude_id = $post->ID;
         $posttags = get_the_tags();
@@ -31,7 +31,7 @@
             wp_reset_query();
         } ?>
         <?php if ($i == 0) : ?>
-            <p class="card-text"><?php _e('没有找到相关文章,请自行搜索更靠谱!', 'dale6_com') ?></p>
+            <p class="card-text"><?php _e('没有找到相关文章,请自行搜索更靠谱!', 'dalewenzhang') ?></p>
         <?php endif ?>
     </div>
 </div>

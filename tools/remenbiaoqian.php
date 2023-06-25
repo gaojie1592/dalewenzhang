@@ -8,7 +8,7 @@
         ));
 
         if ($lastposts) : ?>
-            <p class="card-title"><?php _e('热门标签', 'dale6_com'); ?></p>
+            <p class="card-title"><?php _e('热门标签', 'dalewenzhang'); ?></p>
             <?php foreach ($lastposts as $tag) : ?>
                 <div class="d-flex">
                     <p class="flex-grow-1 text-truncate card-text mb-0">
@@ -20,7 +20,7 @@
                 </div>
             <?php endforeach; ?>
         <?php else : ?>
-            <p class="card-text"><?php _e('没有标签,请创建标签', 'dale6_com'); ?></p>
+            <p class="card-text"><?php _e('没有标签,请创建标签', 'dalewenzhang'); ?></p>
         <?php endif; ?>
     </div>
 </div>

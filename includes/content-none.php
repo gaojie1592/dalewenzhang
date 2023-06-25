@@ -4,7 +4,7 @@
 			<h1 class="page-title text-center">
 				<?php
 				printf(
-					__('搜索关键字词"%s"没有结果！请重新搜索!', 'dale6_com'),
+					__('搜索关键字词"%s"没有结果！请重新搜索!', 'dalewenzhang'),
 					'<span class="page-description search-term text-danger">' . esc_html(get_search_query()) . '</span>'
 				);
 				?>
@@ -13,14 +13,14 @@
 			<?php
 			printf(
 				'<p>' . wp_kses(
-					__('准备好发表你的第一篇文章了吗? <a href="%s">点这里发文章</a>.', 'dale6_com'),
+					__('准备好发表你的第一篇文章了吗? <a href="%s">点这里发文章</a>.', 'dalewenzhang'),
 					array('a' => array('href' => array()))
 				) . '</p>',
 				esc_url(admin_url('post-new.php'))
 			);
 			?>
 		<?php else : ?>
-			<?php _e('<h1>没有找到数据！</h1>', 'dale6_com'); ?>
+			<?php _e('<h1>没有找到数据！</h1>', 'dalewenzhang'); ?>
 		<?php endif; ?>
 	</div>
 </section>
