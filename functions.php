@@ -20,11 +20,16 @@ define('DALE6_COM_POST_TOP', 'dale6_com_post_top');
 // 评论点赞数标记
 define('DALE6_COM_COMMENT_TOP', 'dale6_com_comment_top');
 
-
-function theme_setup()
+/**
+ * 安装主题
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
+function dale6_com_theme_setup()
 {
     // 加载多语言
-    load_theme_textdomain( 'dale6_com', get_template_directory(). '/languages' );    
+    load_theme_textdomain('dale6_com', get_template_directory() . '/languages');
     // 该功能在HTML <head>中增加了RSS提要链接
     add_theme_support('automatic-feed-links');
     // 在自定义主题里可定义项上显示标签
@@ -52,7 +57,7 @@ function theme_setup()
     // 自定义logo
     add_theme_support('custom-logo');
 }
-add_action('after_setup_theme', 'theme_setup');
+add_action('after_setup_theme', 'dale6_com_theme_setup');
 
 // 添加JS到首页 
 if (!function_exists('dale6_com_script')) {
@@ -66,8 +71,15 @@ if (!function_exists('dale6_com_script')) {
 }
 add_action('wp_enqueue_scripts', 'dale6_com_script');
 
-// 去除评论所有HTML标记,只保留code标签，再加上pre标签用来代码美化
-function pinglun_guolv($comment_text, $deltags = true)
+/**
+ * 去除评论所有HTML标记,只保留code标签，再加上pre标签用来代码美化
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param string    $comment_text    评论
+ * @param bool      $deltags         是否删除html标签
+ * @return string   $comment_text
+ */
+function dale6_com_pinglun_guolv($comment_text, $deltags = true)
 {
     if ($deltags) $comment_text = strip_tags($comment_text, array('<code>'));
     // 正则获取 <code> 之内的数据，在外围添加<pre></pre>
@@ -100,6 +112,8 @@ function pinglun_guolv($comment_text, $deltags = true)
 }
 /**
  * 给文本添加p标签,有排除字符或数组
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
  * @param string $text 待处理的文本字符串
  * @param string[]|string $paichu 需要排除的字符串或字符串数组
  * @return string 处理后的字符串
@@ -154,6 +168,13 @@ function text_add_tags($text, $paichu = '')
     }
     return $text;
 }
+/**
+ * 评论文字长度警告
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param string         $comment_text    评论
+ * @return string|void   $comment_text
+ */
 function pinglun_text_post($comment_text)
 {
     if (strlen($comment_text) < 20) {
@@ -162,8 +183,15 @@ function pinglun_text_post($comment_text)
     if (strlen($comment_text) > 5000) {
         wp_die(__('评论过长，请控制在不超过5000字符内！', 'dale6_com'));
     }
-    return pinglun_guolv($comment_text);
+    return dale6_com_pinglun_guolv($comment_text);
 }
+/**
+ * 评论文字长度限制
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param string    $comment_text    评论
+ * @return string   $comment_text
+ */
 function pinglun_text($comment_text)
 {
     if (strlen($comment_text) > 5000) {
@@ -192,7 +220,6 @@ add_filter('preprocess_comment', function ($comment) {
     $comment['comment_content'] = pinglun_text_post($comment['comment_content']);
     return $comment;
 });
-// 保存评论 comment_post
 // 更新评论
 add_filter('comment_save_pre', 'pinglun_text_post');
 // 输出评论内容 
@@ -201,8 +228,14 @@ add_filter('comment_text', 'pinglun_text');
 add_filter('comment_text_rss', 'pinglun_text');
 // 过滤评论摘录
 add_filter('comment_excerpt', 'pinglun_text');
+
 /**
- * 添加子评论到父评论
+ * 递归添加子评论到父评论
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param array    $comments    父评论
+ * @param array    $comment    子评论
+ * @return array   $comments
  */
 function dale6_com_add_comment_children($comments, $comment)
 {
@@ -217,6 +250,12 @@ function dale6_com_add_comment_children($comments, $comment)
     }
     return $comments;
 }
+/**
+ * 获取评论以及相关meta值
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return array   $comments
+ */
 function dale6_com_get_commment()
 {
     // 返回所有评论与对应作者以及meta dale6_com_comment_top 是有点赞的评论
@@ -295,6 +334,10 @@ function dale6_com_get_commment()
 }
 /**
  * 添加评论打分数据,方便评论列表输出
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param array    $comments    当前页面的评论数组
+ * @return array   $comments
  */
 function dale6_com_query_comment($comments)
 {
@@ -318,8 +361,15 @@ function dale6_com_query_comment($comments)
     return $comments;
 }
 add_filter('the_comments', 'dale6_com_query_comment');
+
 /**
  * 输出评论
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param obj      $comment  当前输出评论对象
+ * @param array    $args     参数数组
+ * @param int      $depth    当前深度层数
+ * @return void    输出结果
  */
 function dale6_com_echo_comment($comment, $args, $depth)
 {
@@ -386,104 +436,20 @@ function dale6_com_echo_comment($comment, $args, $depth)
     </div>
 
     <?php if ('div' != $args['style']) echo '</div>' ?>
-<?php
-}
-
-function dale6_com_echo_comment_b($comment, $args, $depth = '', $is_children = false)
-{
-    global $post;
-    // 当前评论是子评论
-    // if (!$args['has_children']) {
-    // }
-    // 是否已登录
-    // $user = wp_get_current_user();
-    // 是否已登录
-    // $is_login = $user->exists();
-    // foreach ($comments as $comment) :
-    // echo '<pre>';
-    // var_dump($comment);
-    $author = $comment->user_id == $post->post_author ? true : false;
-?>
-    <div id="comment-<?php echo $comment->comment_ID; ?>" class="pt-3 border-top<?php echo $is_children ? ' children' : '' ?>">
-        <div class="d-flex flex-column">
-            <div class="d-flex align-items-center">
-                <div class="flex-shrink-0 dale6_com_user_ico">
-                    <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/noavatar.svg" data-src="<?php echo get_avatar_url($comment->user_id, array('size' => 40)) ?>" width="40" height="40" alt="<?php echo dale6_com_get_display_name($comment) ?>">
-                </div>
-                <div class="flex-grow-1 d-flex flex-column ms-3">
-                    <div class="d-flex">
-                        <div class="d-inline-block text-truncate w-150px">
-                            <?php if ('0' == $comment->comment_approved) : ?>
-                                <?php _e('待审核', 'dale6_com') ?><?php _e('作者', 'dale6_com') ?>
-                            <?php else : ?>
-                                <?php if ($comment->comment_type == 'pingback' || $comment->comment_type == 'trackback') : ?>
-                                    <?php echo mb_substr(dale6_com_get_display_name($comment), 0, 50, 'utf8'); ?>
-                                <?php else : ?>
-                                    <a href="<?php echo get_author_posts_url($comment->user_id) ?>"><?php echo mb_substr(dale6_com_get_display_name($comment), 0, 50, 'utf8'); ?></a>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                        </div>
-                        <?php if ($author) : ?>
-                            <span class="badge rounded-pill text-bg-dark"><?php _e('作者', 'dale6_com') ?></span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="text-muted lh-1">
-                        <?php echo jiange_time(__('评论于', 'dale6_com'), $comment->comment_date, __('前', 'dale6_com')) ?>
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex flex-column">
-                <?php if ('0' == $comment->comment_approved) : ?>
-                    <div class="pt-3"><?php _e('您的评论正在等待审核.', 'dale6_com'); ?></div>
-                <?php else : ?>
-                    <div class="pt-3 overflow-hidden comment-text">
-                        <a rel="nofollow" class="btn btn-sm border w-100 bg-secondary-subtle comment-btn" style="display:none;"><?php _e('评论过长,点击展开', 'dale6_com') ?><?php _e('展开', 'dale6_com') ?></a>
-                        <?php echo apply_filters('comment_text', $comment->comment_content) ?>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div class="pe-2">
-                            <?php do_action('dale6_com_top_or_down_button', $is_login, $comment->dale6_com_comment_meta_value, $comment->comment_ID, 'pinglun'); ?>
-                        </div>
-                        <div class="ps-2">
-                            <span class="text-muted">
-                                <?php
-                                // 显示评论的回复链接，已打开必须注册才能回复，未登录
-                                if (get_option('comment_registration') && !$is_login) {
-                                    echo '<a rel="nofollow" class="btn btn-link btn-sm ps-0" data-bs-toggle="modal" data-bs-target="#exampleModal">' . __('登录后回复', 'dale6_com') . '</a>';
-                                } else {
-                                    comment_reply_link(array_merge($args, array(
-                                        // 'add_below' => $add_below,
-                                        'depth'     => $depth,
-                                        'max_depth' => isset($args['max_depth']) ? $args['max_depth'] : 0,
-                                        'before'        => '',
-                                        'after'         => '',
-                                    )));
-                                }
-                                ?>
-                            </span>
-                            <?php if ($is_login && $comment->user_id == $user->ID) : ?>
-                                <span class="text-muted">
-                                    <a rel="nofollow" class="btn btn-link btn-sm" href="<?php echo admin_url('comment.php?action=editcomment&amp;c=') . $comment->comment_ID ?>"><?php _e('编辑', 'dale6_com'); ?></a>
-                                </span>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
-    <?php //endforeach;
-
+    <?php
 }
 
 /**
  * 输出点赞与踩图标
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
  * @param string|int    $tval  显示的结果
  * @param string|int|false    $tid 唯一id,一般是文章ID或者评论ID
  * @param string $type 'pinglun' 'post' 二选一
  * @return void  输出结果
  */
-add_action('dale6_com_top_or_down_button', function ($bool, $tval, $tid, $type) {
+function dale6_com_top_or_down_button($bool, $tval, $tid, $type)
+{
     $ding = __('赞', 'dale6_com');
     $cai = __('踩', 'dale6_com');
     $upico = '<svg class="bi bi-caret-up-fill" width="20" height="20" viewBox="0 0 18 18"><path d="M1 12h16L9 4l-8 8Z"></path></svg>';
@@ -505,9 +471,15 @@ add_action('dale6_com_top_or_down_button', function ($bool, $tval, $tid, $type) 
             <?php echo $doico ?>
         </button>
     <?php endif;
-}, 10, 4);
+}
+add_action('dale6_com_top_or_down_button', 'dale6_com_top_or_down_button', 10, 4);
 
-// 跳转到主题编辑link
+/**
+ * 跳转到主题编辑link
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
 function to_zhuti_bianji_link()
 {
     global $admin;
@@ -521,15 +493,16 @@ function to_zhuti_bianji_link()
     <?php
     endif;
 }
-// 主要用来处理内容被分页显示不全，这个方法显示所有内容
-// function dale6_the_content($post_content)
-// {
-//     $content = get_extended($post_content);
-//     $content = $content['main'] . (!empty($content['extended']) ? $content['extended'] : '');
-//     // $content = content_text_guolv($content['main'] . (!empty($content['extended']) ? $content['extended'] : ''));
-//     return apply_filters('the_content', $content);
-// }
-// 返回详细距离时间 get_option('gmt_offset')获取时区间隔int
+
+/**
+ * 返回详细距离时间 get_option('gmt_offset')获取时区间隔int
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param string $qianzui 结果前缀显示字符串
+ * @param string $date    时间戳
+ * @param string $houzui  结果前缀显示字符串
+ * @return string
+ */
 function jiange_time($qianzui, $date, $houzui)
 {
     $time = strtotime(wp_date('Y-m-d H:i:s')) - strtotime($date);
@@ -554,31 +527,32 @@ function jiange_time($qianzui, $date, $houzui)
     }
 }
 
-// 没有设置首部菜单的默认菜单输出，由 wp_nav_menu 输出
-function ds_nav_menu_fallback()
-{
-    return '<div>ds_nav_menu_fallback</div>';
-    // exit;
-    $categories = get_categories(array(
-        'orderby' => 'name',
-        'parent'  => 0
-    ));
-    $res = '<ul class="navbar-nav flex-grow-1">';
-    foreach ($categories as $category) {
-        $res .= '<li class="nav-item"><a href="' . esc_url(get_category_link($category->term_id)) . '">' . esc_html($category->name) . '</a></li>';
-    }
-    return $res . '</ul>';
-}
-// 移除菜单的多余CSS选择器,给菜单a标签添加class
+// 
 add_filter('nav_menu_css_class', 'my_css_attributes_filter', 100, 1);
 add_filter('nav_menu_item_id', 'my_css_attributes_filter', 100, 1);
 add_filter('page_css_class', 'my_css_attributes_filter', 100, 1);
-add_filter('nav_menu_link_attributes', 'sonliss_menu_link_atts', 10, 3);
+add_filter('nav_menu_link_attributes', 'sonliss_menu_link_atts');
+
+/**
+ * 移除菜单的多余CSS选择器,给菜单a标签添加class
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param array|null 参数
+ * @return array|null|string
+ */
 function my_css_attributes_filter($var)
 {
     return is_array($var) ? array('nav-item', 'text-center') : '';
 }
-function sonliss_menu_link_atts($atts, $item, $args)
+
+/**
+ * 修改菜单class样式
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param array 参数
+ * @return array
+ */
+function sonliss_menu_link_atts($atts)
 {
     $atts['class'] = 'nav-link';
     return $atts;
@@ -591,7 +565,13 @@ register_nav_menus(array(
     'footer_nav' => __('页脚', 'dale6_com'),
 ));
 
-// 返回可用用户名
+/**
+ * 返回可用用户名
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param array|object 参数
+ * @return string
+ */
 function dale6_com_get_display_name($object)
 {
     if (!empty($object->comment_author)) return $object->comment_author;
@@ -607,7 +587,13 @@ function dale6_com_get_display_name($object)
     if (!empty($object->user_login)) return $object->user_login;
     return __('未知用户', 'dale6_com');
 }
-// 直接将方法写入到文件页面
+
+/**
+ * 添加文章浏览次数
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
 function dale6_com_add_views()
 {
     $post = get_post();
@@ -619,7 +605,14 @@ function dale6_com_add_views()
         }
     }
 }
-// 文章的阅读次数
+
+/**
+ * 返回文章浏览次数
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param int 大于0的数字将直接返回
+ * @return int
+ */
 function dale6_com_the_views($echo = 0)
 {
     if ($echo > 0) return $echo;
@@ -628,36 +621,61 @@ function dale6_com_the_views($echo = 0)
     $views = (int)get_post_meta($post_ID, DALE6_COM_POST_VIEWS_COUNT, true);
     return $views;
 }
+/**
+ * 输出文章浏览次数
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param int 大于0的数字将直接返回
+ * @return int
+ */
 function echo_dale6_com_the_views($echo = 0)
 {
     echo dale6_com_the_views($echo);
 }
 
-// 加载前端js用到的数据
-if (!function_exists('dale6_com_js_data')) {
-    function dale6_com_js_data()
-    {
-        // 当前页面url
-        // $dangqian_url = home_url(add_query_arg(array(), $wp->request));
-        // $dangqian_url = this_url();
-        $data = array(
-            'ajaxurl' => '/wp-admin/admin-ajax.php',
-        );
-        echo '<script>var dale6_com_global = ', json_encode($data, JSON_FORCE_OBJECT), '</script>';
-    }
+
+/**
+ * 输出前端js用到的数据
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void 
+ */
+function dale6_com_js_data()
+{
+    $data = array(
+        'ajaxurl' => '/wp-admin/admin-ajax.php',
+    );
+    echo '<script>var dale6_com_global = ', json_encode($data, JSON_FORCE_OBJECT), '</script>';
 }
 add_action('wp_head', 'dale6_com_js_data');
 add_action('admin_enqueue_scripts', 'dale6_com_js_data');
 
-add_filter('bloginfo', function ($output, $show) {
+/**
+ * 限制博客信息长度
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param  string 将要输出的字符串
+ * @param  string 将要输出的类型
+ * @return string 限制长度后的字符串 
+ */
+function dale6_com_xianzhi_info($output, $show)
+{
     // 限制网站名称长度为20字符
     if ($show == 'name') $output = mb_substr($output, 0, 20, 'utf8');
     // 限制网站介绍长度为200字符
     if ($show == 'description') $output = mb_substr($output, 0, 200, 'utf8');
     return $output;
-}, 10, 2);
+}
+add_filter('bloginfo', 'dale6_com_xianzhi_info', 10, 2);
 
-add_action('wp_head', function () {
+/**
+ * 输出SEO优化后的头信息
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
+function dale6_com_echo_seo_head()
+{
     if (is_front_page() || is_home()) {
         $description = get_bloginfo('name', 'display');
         $keywords = get_bloginfo('description', 'display');
@@ -705,8 +723,15 @@ add_action('wp_head', function () {
     echo "<title>$description - $keywords</title>";
     echo "<meta name='description' content='$description' />";
     echo "<meta name='keywords' content='$keywords' />";
-});
-// 获取当前url
+}
+add_action('wp_head', 'dale6_com_echo_seo_head');
+
+/**
+ * 获取当前页面url
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return string
+ */
 function this_url()
 {
     $current_url = home_url(add_query_arg(array()));
@@ -717,12 +742,6 @@ function this_url()
     }
     return $current_url;
 }
-// 用于翻译
-function theme_init()
-{
-    load_theme_textdomain('dale6_com', get_template_directory() . '/languages');
-}
-
 add_action('login_head', function () {
     echo '<style type="text/css">#login h1 a {background-image:unset;display:contents;}#login form{background:unset;border:unset;box-shadow:unset;}</style>';
 });
@@ -735,49 +754,57 @@ add_filter('login_headerurl', function () {
     return home_url();
 });
 
-// 文章编辑添加box
-add_action('add_meta_boxes', function () {
-    add_meta_box('dale6_com_post_seo', __('大乐文章SEO设置', 'dale6_com'), function ($post) {
-        wp_nonce_field('wenzhang_meta_input_a', 'custom_nonce');
-        $seo_arr = get_post_meta($post->ID, 'dale6_com_post_seo', true);
+// 
+/**
+ * 文章编辑添加box,给文章标题添加html前缀,SEO简介说明
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
+function dale6_com_edit_post_box($post)
+{
+    wp_nonce_field('wenzhang_meta_input_a', 'custom_nonce');
+    $seo_arr = get_post_meta($post->ID, 'dale6_com_post_seo', true);
     ?>
-        <table class="form-table" role="presentation">
-            <tbody>
-                <tr>
-                    <th><label for="biaotibiaoqian"><?php _e('文章标题前缀', 'dale6_com') ?></label></th>
-                    <td>
-                        <input name="biaotibiaoqian" id="biaotibiaoqian" type="text" value="<?php echo htmlentities(isset($seo_arr['biaotibiaoqian']) ? $seo_arr['biaotibiaoqian'] : '') ?>" class="regular-text">
-                        <p><?php _e('为空则不输出,一般用于原创转载识别,HTML格式,CSS框架[Bootstrap v5.3.0],点击例子:', 'dale6_com') ?>
-                            <span class="badge bg-secondary add_biaotibiaoqian">原创</span>
-                        </p>
-                    </td>
-                </tr>
-                <tr>
-                    <th><label for="seo_description"><?php _e('SEO简介说明', 'dale6_com') ?></label></th>
-                    <td>
-                        <input name="seo_description" id="seo_description" type="text" value="<?php echo isset($seo_arr['seo_description']) ? $seo_arr['seo_description'] : '' ?>" class="regular-text">
-                        <p><?php _e('为空则输出文章前约180个字', 'dale6_com') ?></p>
-                    </td>
-                </tr>
-                <tr>
-                    <th><label for="seo_keywords"><?php _e('SEO关键字', 'dale6_com') ?></label></th>
-                    <td>
-                        <input name="seo_keywords" id="seo_keywords" type="text" value="<?php echo isset($seo_arr['seo_keywords']) ? $seo_arr['seo_keywords'] : '' ?>" class="regular-text">
-                        <p><?php _e('为空则输出文章标签', 'dale6_com') ?></p>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <script>
-            jQuery(document).ready(function($) {
-                $(document).on('click', ".add_biaotibiaoqian", function() {
-                    var str = $(this)[0].outerHTML;
-                    $('#biaotibiaoqian').val(str.replace(' add_biaotibiaoqian', ''));
-                });
+    <table class="form-table" role="presentation">
+        <tbody>
+            <tr>
+                <th><label for="biaotibiaoqian"><?php _e('文章标题前缀', 'dale6_com') ?></label></th>
+                <td>
+                    <input name="biaotibiaoqian" id="biaotibiaoqian" type="text" value="<?php echo htmlentities(isset($seo_arr['biaotibiaoqian']) ? $seo_arr['biaotibiaoqian'] : '') ?>" class="regular-text">
+                    <p><?php _e('为空则不输出,一般用于原创转载识别,HTML格式,CSS框架[Bootstrap v5.3.0],点击例子:', 'dale6_com') ?>
+                        <span class="badge bg-secondary add_biaotibiaoqian">原创</span>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="seo_description"><?php _e('SEO简介说明', 'dale6_com') ?></label></th>
+                <td>
+                    <input name="seo_description" id="seo_description" type="text" value="<?php echo isset($seo_arr['seo_description']) ? $seo_arr['seo_description'] : '' ?>" class="regular-text">
+                    <p><?php _e('为空则输出文章前约180个字', 'dale6_com') ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="seo_keywords"><?php _e('SEO关键字', 'dale6_com') ?></label></th>
+                <td>
+                    <input name="seo_keywords" id="seo_keywords" type="text" value="<?php echo isset($seo_arr['seo_keywords']) ? $seo_arr['seo_keywords'] : '' ?>" class="regular-text">
+                    <p><?php _e('为空则输出文章标签', 'dale6_com') ?></p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <script>
+        jQuery(document).ready(function($) {
+            $(document).on('click', ".add_biaotibiaoqian", function() {
+                var str = $(this)[0].outerHTML;
+                $('#biaotibiaoqian').val(str.replace(' add_biaotibiaoqian', ''));
             });
-        </script>
-        <?php
-    }, 'post');
+        });
+    </script>
+    <?php
+}
+add_action('add_meta_boxes', function () {
+    add_meta_box('dale6_com_post_seo', __('大乐文章SEO设置', 'dale6_com'), 'dale6_com_edit_post_box', 'post');
 });
 add_action('save_post', function ($post_ID) {
     $nonce_name   = isset($_POST['custom_nonce']) ? $_POST['custom_nonce'] : '';
@@ -811,7 +838,7 @@ if ($is_admin) {
     // 主题设置菜单
     add_action('admin_menu', function () {
         add_menu_page(__('大乐主题|极致简洁', 'dale6_com'), __('大乐主题', 'dale6_com'), 'manage_options', 'dale6_com_Theme_shezhiyemian', function () {
-        ?>
+    ?>
             <div class="wrap">
                 <h1><?php _e('大乐主题相关设置', 'dale6_com') ?></h1>
                 <form method="post" action="options.php">
@@ -905,6 +932,12 @@ add_action('phpmailer_init', function ($mail) {
     $mail->IsSMTP();
 });
 
+/**
+ * 主题设置参数
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
 function dale6_com_echo_email_username()
 {
     global $options;
@@ -928,6 +961,12 @@ function dale6_com_echo_email_username()
     <input type='text' name='dale6_com_setting[email_nicheng]' value='<?php echo isset($options['email_nicheng']) ? $options['email_nicheng'] : ''; ?>'>
 <?php
 }
+/**
+ * 主题设置参数
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
 function dale6_com_echo_pingluntxleixing()
 {
     global $options;
@@ -938,12 +977,24 @@ function dale6_com_echo_pingluntxleixing()
     <label for="pingluntxleixing2"><?php _e('显示头像,错误后再显示背景颜色', 'dale6_com'); ?></label>
 <?php
 }
+/**
+ * 主题设置参数
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
 function dale6_com_echo_pinglun_txbj_color()
 {
     global $options;
     if (!isset($options['pinglunbeijingyanse']) || empty($options['pinglunbeijingyanse'])) $options['pinglunbeijingyanse'] = DALE6_COM_PINGLUN_TX_COLOR;
     echo '["' . implode('","', $options['pinglunbeijingyanse']) . '"]';
 }
+/**
+ * 主题设置参数
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
 function dale6_com_echo_pinglunbeijingyanse()
 {
     global $options;
@@ -1017,6 +1068,12 @@ function dale6_com_echo_pinglunbeijingyanse()
     </script>
 <?php
 }
+/**
+ * 主题设置参数
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
 function dale6_com_echo_wenzhangzhuijia()
 {
     global $options;
@@ -1025,6 +1082,12 @@ function dale6_com_echo_wenzhangzhuijia()
     <textarea name="dale6_com_setting[wenzhangzhuijia]" class="regular-text" rows="6"><?php echo isset($options['wenzhangzhuijia']) ? $options['wenzhangzhuijia'] : ''; ?></textarea>
 <?php
 }
+/**
+ * 主题设置参数
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
 function dale6_com_echo_yetoutianjia()
 {
     global $options;
@@ -1033,6 +1096,12 @@ function dale6_com_echo_yetoutianjia()
     <textarea name="dale6_com_setting[yetoutianjia]" class="regular-text" rows="6"><?php echo isset($options['yetoutianjia']) ? $options['yetoutianjia'] : ''; ?></textarea>
 <?php
 }
+/**
+ * 主题设置参数
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
 function dale6_com_echo_yejiaozhuijia()
 {
     global $options;
@@ -1041,6 +1110,12 @@ function dale6_com_echo_yejiaozhuijia()
     <textarea name="dale6_com_setting[yejiaozhuijia]" class="regular-text" rows="6"><?php echo isset($options['yejiaozhuijia']) ? $options['yejiaozhuijia'] : ''; ?></textarea>
 <?php
 }
+/**
+ * 主题设置参数
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
 function dale6_com_echo_yejiaotianjia()
 {
     global $options;
@@ -1049,12 +1124,19 @@ function dale6_com_echo_yejiaotianjia()
     <textarea name="dale6_com_setting[yejiaotianjia]" class="regular-text" rows="6"><?php echo isset($options['yejiaotianjia']) ? $options['yejiaotianjia'] : ''; ?></textarea>
 <?php
 }
-
+/**
+ * 主题设置参数
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
 function stp_api_settings_section_callback()
 {
 ?>
     <p><a href="https://www.dashengx.com" target="_blank"><?php _e('请使用插件[大圣盒子]来提升性能!', 'dale6_com'); ?></a></p>
-
+    <p><?php _e('[大圣盒子] 插件与 [大乐文章] 主题一脉相承!', 'dale6_com'); ?></p>
+    <p><?php _e('[大圣盒子] 的免费功能完全够用!', 'dale6_com'); ?></p>
+    <p><?php _e('[大圣盒子] 的收费功能适用于专业用户!', 'dale6_com'); ?></p>
 <?php
 }
 
@@ -1064,16 +1146,32 @@ add_filter('dale6_com_the_title', function ($title) {
     return $title;
 });
 
-// 修改 pingback 自动评论内容格式
-add_filter('dale6_pingback_or_trackback_comment_content', function ($comment) {
+/**
+ * 修改 pingback 自动评论内容格式
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param string $comment 评论内容
+ * @return string
+ */
+function dale6_pingback_or_trackback_comment_content($comment)
+{
     $comment_content = '<a href="' . $comment->comment_author_url . '" target="_blank" rel="noopener noreferrer nofollow">' . __('很荣幸转载了你的文章!感谢!', 'dale6_com') . '</a>';
     return $comment_content;
-});
-// 修改 pingback 自动评论显示名称
-add_filter('dale6_pingback_or_trackback_display_name', function ($comment) {
+}
+add_filter('dale6_pingback_or_trackback_comment_content', 'dale6_pingback_or_trackback_comment_content');
+
+/**
+ * 修改 pingback 自动评论显示名称
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return string
+ */
+function dale6_pingback_or_trackback_display_name($comment)
+{
     $display_name = parse_url($comment->comment_author_url, PHP_URL_HOST);
     return $display_name;
-});
+}
+add_filter('dale6_pingback_or_trackback_display_name', 'dale6_pingback_or_trackback_display_name');
 
 // 最后输出前的安全处理
 add_action('init', function () {
@@ -1094,8 +1192,13 @@ add_action('init', function () {
     header_remove('X-Runtime');
     header_remove('X-Version');
 });
-// 登录与注册,没有账号则注册后登录,有账号直接登录
-// if (!is_user_logged_in()) {
+
+/**
+ * AJAX登录与注册,没有账号则注册后登录,有账号直接登录
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void 返回登录结果
+ */
 function dale6_com_ajax_login()
 {
     if (!isset($_SESSION['send_mailcode']) || !isset($_POST['send_mailcode']) || !isset($_POST['emailcode']) || !isset($_POST['email']) || !is_email(sanitize_email($_POST['email'])) || $_SESSION['send_mailcode'] != $_POST['send_mailcode'] || parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST) != parse_url(home_url(), PHP_URL_HOST) || !isset($_SESSION['mailcode']) || !isset($_SESSION['mailcode_guoqitime'])) {
@@ -1133,7 +1236,12 @@ function dale6_com_ajax_login()
 }
 add_action('wp_ajax_nopriv_ajaxdenglu', 'dale6_com_ajax_login');
 
-// 发送邮件验证码
+/**
+ * AJAX发送邮件验证码
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void 返回结果
+ */
 function dale6_com_sendmailcode()
 {
     // 验证 send_mailcode 
@@ -1167,8 +1275,12 @@ function dale6_com_sendmailcode()
 }
 add_action('wp_ajax_nopriv_sendmailcode', 'dale6_com_sendmailcode');
 
-
-// 角色注销后跳转地址,这里改成你要跳转的网址
+/**
+ * 角色注销后跳转地址,这里改成你要跳转的网址
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return string 返回结果
+ */
 function logout_redirect($logouturl, $redir)
 {
     $outurl = this_url();
@@ -1176,7 +1288,12 @@ function logout_redirect($logouturl, $redir)
 }
 add_filter('logout_url', 'logout_redirect', 10, 3);
 
-// 评论top
+/**
+ * 评论top
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void 返回结果
+ */
 function dale6_com_ajax_pingluntop()
 {
     if (!is_user_logged_in() || !isset($_POST['ty']) || !isset($_POST['type']) || !isset($_POST['cid']) || !isset($_POST['key']) || !wp_verify_nonce($_POST['key'], 'ajaxpingluntop')) {

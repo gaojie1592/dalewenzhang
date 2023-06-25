@@ -29,7 +29,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 
-dale6_com 主题使用了 Bootstrap 前端框架
+The dale6_com theme uses the Bootstrap front-end framework
 
 Bootstrap
 copyright 2011–2023 the Bootstrap Authors.

@@ -1,6 +1,6 @@
 <?php get_header(); ?>
 
-<body>
+<body <?php body_class(); ?>>
     <?php get_template_part('toolbar'); ?>
     <div class="container mt-3">
         <div class="row">
@@ -12,7 +12,6 @@
             </div>
         </div>
     </div>
-    <?php wp_footer() ?>
     <?php get_footer() ?>
 </body>
 

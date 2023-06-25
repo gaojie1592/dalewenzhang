@@ -1,6 +1,6 @@
 <?php get_header(); ?>
 
-<body <?php echo body_class(); ?>>
+<body <?php body_class(); ?>>
     <?php get_template_part('toolbar'); ?>
     <div class="container mt-3">
         <div class="row">
