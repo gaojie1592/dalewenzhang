@@ -95,3 +95,30 @@ function ds_send_toString(data) {
     }
     return a.join("&");
 }
+
+dale6_addLoadEvent(function() {
+    var t = document.getElementById('dale6_com_ajaxpingluntop').value;
+    document.querySelectorAll('.pinglun_up,.pinglun_down').forEach(function(e) {
+        e.addEventListener("click", function(event) {
+            ds_djs(this, 5, 0);
+            var c = this.getAttribute('tid'),
+                d = this.getAttribute('dale6_com_data'),
+                e = this.getAttribute("ty");
+            ds_post({
+                'action': 'ajaxpingluntop',
+                'key': t,
+                'cid': c,
+                'type': d,
+                'ty': e
+            }, function(a) {
+                if (a.status == 200) {
+                    var b = JSON.parse(a.responseText);
+                    if (b.data.c == 200) {
+                        document.getElementById(e + '_top_sum-' + b.data.data.cid).innerHTML = b.data.data.sum;
+                    }
+                    alert(b.data.ms);
+                }
+            });
+        });
+    });
+});

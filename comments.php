@@ -59,36 +59,5 @@
 			),
 		));
 		?>
-		<script>
-			dale6_addLoadEvent(function() {
-				document.getElementById('charudaima').addEventListener('click', function(e) {
-					document.getElementById('comment').value = document.getElementById('comment').value + '<code>//<?php _e('代码', 'dale6_com'); ?></code>';
-				});
-			});
-		</script>
 	<?php endif; ?>
 </div>
-<script>
-	dale6_addLoadEvent(function() {
-		document.querySelectorAll('.comment-text').forEach(function(e) {
-			let height = e.scrollHeight;
-			let btn = e.querySelector('.comment-btn');
-			if (height > 125) {
-				let show = true;
-				btn.style.display = 'block';
-				e.style.height = '125px';
-				btn.addEventListener("click", function(event) {
-					if (show) {
-						show = false;
-						btn.textContent = '<?php _e('收缩', 'dale6_com') ?>';
-						e.style.height = (height + 30) + 'px';
-					} else {
-						show = true;
-						btn.textContent = '<?php _e('展开', 'dale6_com') ?>';
-						e.style.height = '125px';
-					}
-				});
-			}
-		});
-	});
-</script>

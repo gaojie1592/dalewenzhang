@@ -564,7 +564,164 @@ register_nav_menus(array(
     'left_nav'   => __('首页左', 'dale6_com'),
     'footer_nav' => __('页脚', 'dale6_com'),
 ));
-
+/**
+ * 输出页脚脚本
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
+function dale6_com_echo_footer()
+{
+    global $options;
+    // 用户自定义页脚输出
+    if (isset($options['yejiaotianjia']) && !empty($options['yejiaotianjia'])) {
+        echo $options['yejiaotianjia'];
+    }
+    // 头像随机颜色背景输出
+    ?>
+    <script>
+        dale6_addLoadEvent(function() {
+            const colors = <?php dale6_com_echo_pinglun_txbj_color(); ?>;
+            let colorIndex = 0;
+            document.querySelectorAll('.dale6_com_user_ico').forEach(function(e) {
+                let el = e.firstElementChild;
+                let url = el.getAttribute('data-src');
+                let alt = el.getAttribute('alt');
+                let width = el.getAttribute('width');
+                let height = el.getAttribute('height');
+                e.style.width = width + "px";
+                e.style.height = height + "px";
+                el.remove();
+                <?php if (isset($options['pingluntxleixing']) && $options['pingluntxleixing'] == '2' || empty($options['pingluntxleixing'])) : ?>
+                    var img = new Image();
+                    img.src = url;
+                    img.onload = function() {
+                        let newimg = new Image();
+                        newimg.src = url;
+                        newimg.alt = alt;
+                        newimg.width = width;
+                        newimg.height = height;
+                        e.firstElementChild.remove();
+                        e.appendChild(newimg);
+                    };
+                <?php endif; ?>
+                let div = document.createElement('div');
+                div.style.backgroundColor = colors[colorIndex++ % colors.length];
+                div.style.lineHeight = height + 'px';
+                div.classList.add('dale6_com_user_ico_div');
+                div.innerText = alt.substr(0, 1).toUpperCase();
+                e.appendChild(div);
+            });
+        });
+    </script>
+    <script>
+        dale6_addLoadEvent(function() {
+            document.getElementById('charudaima').addEventListener('click', function(e) {
+                document.getElementById('comment').value = document.getElementById('comment').value + '<code>//<?php _e('代码', 'dale6_com'); ?></code>';
+            });
+        });
+    </script>
+    <script>
+        dale6_addLoadEvent(function() {
+            document.querySelectorAll('.comment-text').forEach(function(e) {
+                let height = e.scrollHeight;
+                let btn = e.querySelector('.comment-btn');
+                if (height > 125) {
+                    let show = true;
+                    btn.style.display = 'block';
+                    e.style.height = '125px';
+                    btn.addEventListener("click", function(event) {
+                        if (show) {
+                            show = false;
+                            btn.textContent = '<?php _e('收缩', 'dale6_com') ?>';
+                            e.style.height = (height + 30) + 'px';
+                        } else {
+                            show = true;
+                            btn.textContent = '<?php _e('展开', 'dale6_com') ?>';
+                            e.style.height = '125px';
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    <script>
+        function ds_login(e) {
+            var useremail = document.getElementById('r_mail');
+            if (!ds_comp_usermail("r_mail")) {
+                useremail.focus();
+                return false;
+            }
+            var codemm = document.getElementById('codemm');
+            if (codemm.value.trim().replace(/(^s*)|(s*$)/g, "").length == 0) {
+                codemm.focus();
+                return false;
+            }
+            ds_djs(e, 3, 1);
+            ds_post({
+                'action': 'ajaxdenglu',
+                'email': useremail.value,
+                'emailcode': codemm.value,
+                'send_mailcode': "<?php echo $_SESSION['send_mailcode']; ?>"
+            }, function(a) {
+                var h = '',
+                    m = '';
+                if (a.status != 200) {
+                    h = 'red';
+                    m = '<?php _e('服务器错误，请稍后再试！', 'dale6_com'); ?>';
+                } else {
+                    var b = JSON.parse(a.responseText);
+                    h = b.success == true ? 'green' : 'red';
+                    m = b.data.ms;
+                    if (b.data.c == 300) window.location.href = b.data.d;
+                }
+                document.getElementById('userlogin').innerHTML = '<span style="color:' + h + '">' + m + '</span>';
+            });
+        }
+        function ds_send_mail_code(e) {
+            var useremail = document.getElementById('r_mail');
+            if (!ds_comp_usermail("r_mail")) {
+                useremail.focus();
+                return false;
+            }
+            ds_djs(e, 60, 1);
+            ds_post({
+                'action': 'sendmailcode',
+                'email': useremail.value,
+                'send_mailcode': "<?php echo $_SESSION['send_mailcode']; ?>"
+            }, function(a) {
+                var h = '',
+                    m = '';
+                if (a.status != 200) {
+                    h = 'red';
+                    m = '<?php _e('服务器错误，请稍后再试！', 'dale6_com'); ?>';
+                } else {
+                    var b = JSON.parse(a.responseText);
+                    h = b.success == true ? 'green' : 'red';
+                    m = b.data.ms;
+                    if (b.data.c == 300) window.location.href = b.data.d;
+                }
+                document.getElementById('userlogin').innerHTML = '<span style="color:' + h + '">' + m + '</span>';
+            });
+        }
+    </script>
+<?php
+}
+add_action('wp_footer', 'dale6_com_echo_footer');
+/**
+ * 页脚追加HTML,一般用于版本,备案
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return string
+ */
+function dale6_com_yejiaozhuijia()
+{
+    global $options;
+    if (isset($options['yejiaozhuijia']) && !empty($options['yejiaozhuijia'])) {
+        echo $options['yejiaozhuijia'];
+    }
+}
+add_action('dale6_com_yejiaozhuijia', 'dale6_com_yejiaozhuijia');
 /**
  * 返回可用用户名
  * @author dale6.com <gaojie11@163.com>
@@ -633,7 +790,6 @@ function echo_dale6_com_the_views($echo = 0)
     echo dale6_com_the_views($echo);
 }
 
-
 /**
  * 输出前端js用到的数据
  * @author dale6.com <gaojie11@163.com>
@@ -642,6 +798,9 @@ function echo_dale6_com_the_views($echo = 0)
  */
 function dale6_com_js_data()
 {
+    global $options;
+    echo isset($options['yetoutianjia']) ? $options['yetoutianjia'] : '';
+
     $data = array(
         'ajaxurl' => '/wp-admin/admin-ajax.php',
     );
@@ -765,7 +924,7 @@ function dale6_com_edit_post_box($post)
 {
     wp_nonce_field('wenzhang_meta_input_a', 'custom_nonce');
     $seo_arr = get_post_meta($post->ID, 'dale6_com_post_seo', true);
-    ?>
+?>
     <table class="form-table" role="presentation">
         <tbody>
             <tr>
