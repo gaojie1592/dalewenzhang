@@ -486,7 +486,7 @@ function to_zhuti_bianji_link()
     if ($admin) :
     ?>
         <li class="nav-item text-center">
-            <a class="nav-link dl_a" href="<?php echo wp_customize_url('dale6') ?>">
+            <a class="nav-link dl_a" href="<?php echo wp_customize_url() ?>">
                 <?php _e('跳转到主题编辑添加菜单！', 'dalewenzhang'); ?>
             </a>
         </li>
