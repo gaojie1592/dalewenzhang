@@ -1,6 +1,5 @@
 <?php
 global $options;
-wp_nonce_field('ajaxpingluntop', 'dale6_com_ajaxpingluntop');
 // 是否已登录
 $user = wp_get_current_user();
 // 是否已登录

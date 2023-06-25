@@ -1,4 +1,7 @@
-<?php global $user_ID; ?>
+<?php
+global $user_ID;
+wp_nonce_field('ajaxpingluntop', 'dale6_com_ajaxpingluntop');
+?>
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
     <div class="container">
         <?php if (has_custom_logo()) : ?>
