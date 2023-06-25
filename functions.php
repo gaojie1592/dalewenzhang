@@ -662,7 +662,6 @@ function dale6_com_echo_footer()
                 'action': 'ajaxdenglu',
                 'email': useremail.value,
                 'emailcode': codemm.value,
-                'send_mailcode': "<?php echo $_SESSION['send_mailcode']; ?>"
             }, function(a) {
                 var h = '',
                     m = '';
@@ -688,7 +687,6 @@ function dale6_com_echo_footer()
             ds_post({
                 'action': 'sendmailcode',
                 'email': useremail.value,
-                'send_mailcode': "<?php echo $_SESSION['send_mailcode']; ?>"
             }, function(a) {
                 var h = '',
                     m = '';
@@ -1360,7 +1358,7 @@ add_action('init', function () {
  */
 function dale6_com_ajax_login()
 {
-    if (!isset($_SESSION['send_mailcode']) || !isset($_POST['send_mailcode']) || !isset($_POST['emailcode']) || !isset($_POST['email']) || !is_email(sanitize_email($_POST['email'])) || $_SESSION['send_mailcode'] != $_POST['send_mailcode'] || parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST) != parse_url(home_url(), PHP_URL_HOST) || !isset($_SESSION['mailcode']) || !isset($_SESSION['mailcode_guoqitime'])) {
+    if (!isset($_POST['emailcode']) || !isset($_POST['email']) || !is_email(sanitize_email($_POST['email'])) || parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST) != parse_url(home_url(), PHP_URL_HOST) || !isset($_SESSION['mailcode']) || !isset($_SESSION['mailcode_guoqitime'])) {
         status_header(404);
         exit();
     }
@@ -1403,8 +1401,7 @@ add_action('wp_ajax_nopriv_ajaxdenglu', 'dale6_com_ajax_login');
  */
 function dale6_com_sendmailcode()
 {
-    // 验证 send_mailcode 
-    if (!isset($_SESSION['send_mailcode']) || !isset($_POST['send_mailcode']) || !isset($_POST['email']) || $_SESSION['send_mailcode'] != $_POST['send_mailcode'] || parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST) != parse_url(home_url(), PHP_URL_HOST)) {
+    if (!isset($_POST['email']) || parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST) != parse_url(home_url(), PHP_URL_HOST)) {
         status_header(404);
         exit();
     }
