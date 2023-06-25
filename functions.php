@@ -616,9 +616,12 @@ function dale6_com_echo_footer()
     </script>
     <script>
         dale6_addLoadEvent(function() {
-            document.getElementById('charudaima').addEventListener('click', function(e) {
-                document.getElementById('comment').value = document.getElementById('comment').value + '<code>//<?php _e('代码', 'dalewenzhang'); ?></code>';
-            });
+            var tid = document.getElementById('charudaima');
+            if (tid) {
+                tid.addEventListener('click', function(e) {
+                    document.getElementById('comment').value = document.getElementById('comment').value + '<code>//<?php _e('代码', 'dalewenzhang'); ?></code>';
+                });
+            }
         });
     </script>
     <script>
@@ -677,6 +680,7 @@ function dale6_com_echo_footer()
                 document.getElementById('userlogin').innerHTML = '<span style="color:' + h + '">' + m + '</span>';
             });
         }
+
         function ds_send_mail_code(e) {
             var useremail = document.getElementById('r_mail');
             if (!ds_comp_usermail("r_mail")) {
