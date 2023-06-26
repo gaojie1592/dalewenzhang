@@ -33,7 +33,7 @@ function dale6_com_theme_setup()
     // 该功能在HTML <head>中增加了RSS提要链接
     add_theme_support('automatic-feed-links');
     // 在自定义主题里可定义项上显示标签
-    add_theme_support('title-tag');
+    // add_theme_support('title-tag');
     // 添加文章格式支持   get_post_format( $post->ID )就能确定文章所属格式    has_post_format( 'video' )
     // $post_formats = array('aside', 'image', 'gallery', 'video', 'audio', 'link', 'quote', 'status');
     // add_theme_support('post-formats', $post_formats);
@@ -837,17 +837,18 @@ add_filter('bloginfo', 'dale6_com_xianzhi_info', 10, 2);
  */
 function dale6_com_echo_seo_head()
 {
-    if (is_front_page() || is_home()) {
-        $description = get_bloginfo('name', 'display');
-        $keywords = get_bloginfo('description', 'display');
-    } else if (is_single()) {
+    $title = get_bloginfo('name', 'display');
+    $description = get_bloginfo('description', 'display');
+    $keywords = '';
+    if (is_single()) {
         $postid = get_the_ID();
         if ($postid) {
+            $title = empty(get_the_title()) ? $title : get_the_title() . ' - ' . $title;
             // 填写自定义字段description时显示自定义字段的内容，否则使用文章内容前200字作为描述
             $seo_arr = get_post_meta($postid, 'dale6_com_post_seo', true);
             $description1 = isset($seo_arr['seo_description']) ? $seo_arr['seo_description'] : '';
             if (empty($description1)) {
-                $description = get_the_title() . ' | ' . get_bloginfo('name', 'display') . ' | '  . mb_substr(str_ireplace(array(' ', "\r\n", "\n"), '', strip_tags(get_the_content())), 0, 180, 'utf8');
+                $description = mb_substr(str_ireplace(array('"', "'", "\r\n", "\n"), '', strip_tags(get_the_content())), 0, 180, 'utf8');
             } else {
                 $description = $description1;
             }
@@ -855,38 +856,50 @@ function dale6_com_echo_seo_head()
             $keywords1 = isset($seo_arr['seo_keywords']) ? $seo_arr['seo_keywords'] : '';
             if (empty($keywords1)) {
                 $tags = wp_get_post_tags($postid);
-                foreach ($tags as $tag) {
-                    $keywords1 .= $tag->name . ', ';
+                if (count($tags) > 0) {
+                    $keywords1 = array();
+                    foreach ($tags as $tag) {
+                        $keywords1[] = $tag->name;
+                    }
+                    $keywords = implode(',', $keywords1);
                 }
-                $keywords = rtrim($keywords1, ', ');
             } else {
                 $keywords = $keywords1;
             }
         }
-    } else if (is_category()) {
-        $cat = get_query_var('cat');
-        $yourcat = get_category($cat);
-        $description = category_description() . $yourcat->cat_name . ' | ' . get_bloginfo('name', 'display');
-        $keywords = single_cat_title('', false) . ', ' . get_bloginfo('description', 'display');
-    } else if (is_tag()) {
-        $description = tag_description() . single_tag_title('', false) . ' | ' . get_bloginfo('name', 'display');
-        $keywords = single_tag_title('', false) . ' | ' . get_bloginfo('description', 'display');
+    } else if (is_tag() || is_tax() || is_category()) {
+        $description = term_description();
+        $tmp = single_term_title('', false);
+        $title = empty($tmp) ? '' : $tmp . ' | ' . $title;
     } else if (is_archive()) {
-        $description = get_the_archive_title() . ' | ' . get_bloginfo('name', 'display');
-        $keywords = get_bloginfo('description', 'display');
+        $title = empty(get_the_archive_title()) ? $title : get_the_archive_title() . ' | ' . $title;
     } else if (is_page()) {
-        $description = (empty(get_the_title()) ? '' : get_the_title() . ' | ') . get_bloginfo('name', 'display');
-        $keywords = get_bloginfo('description', 'display');
-    } else {
-        $description = get_bloginfo('name', 'display');
-        $keywords = get_bloginfo('description', 'display');
+        $title = empty(get_the_title()) ? $title : get_the_title() . ' | ' . $title;
     }
-    echo "<title>$description - $keywords</title>";
-    echo "<meta name='description' content='$description' />";
-    echo "<meta name='keywords' content='$keywords' />";
+    return array(
+        'title'            => $title,
+        'meta_description' => !empty($description) ? "<meta name='description' content='$description' />" : '', //处理引号标点符号,删除标题已有字符
+        'meta_keywords'    => !empty($keywords) ? "<meta name='keywords' content='$keywords' />" : '',
+    );
 }
-add_action('wp_head', 'dale6_com_echo_seo_head');
-
+add_action('wp_head', function () {
+    $arr = dale6_com_echo_seo_head();
+    echo $arr['meta_description'];
+    echo $arr['meta_keywords'];
+});
+/**
+ * 输出title
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @param $title 文章标题
+ * @return string
+ */
+function dale6_com_echo_title($title)
+{
+    $arr = dale6_com_echo_seo_head();
+    return $arr['title'];
+}
+add_filter('dale6_com_echo_title', 'dale6_com_echo_title');
 /**
  * 获取当前页面url
  * @author dale6.com <gaojie11@163.com>
