@@ -840,7 +840,9 @@ function dale6_com_echo_seo_head()
     $title = get_bloginfo('name', 'display');
     $description = get_bloginfo('description', 'display');
     $keywords = '';
-    if (is_single()) {
+    if (is_home()) {
+        $title = $title . (!empty($description) ? ' - ' . $description : '');
+    } elseif (is_single()) {
         $postid = get_the_ID();
         if ($postid) {
             $title = empty(get_the_title()) ? $title : get_the_title() . ' - ' . $title;
@@ -875,8 +877,6 @@ function dale6_com_echo_seo_head()
         $title = empty(get_the_archive_title()) ? $title : get_the_archive_title() . ' | ' . $title;
     } else if (is_page()) {
         $title = empty(get_the_title()) ? $title : get_the_title() . ' | ' . $title;
-    } else {
-        $title = $title . !empty($description) ? ' - ' . $description : '';
     }
     return array(
         'title'            => $title,
