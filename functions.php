@@ -875,6 +875,8 @@ function dale6_com_echo_seo_head()
         $title = empty(get_the_archive_title()) ? $title : get_the_archive_title() . ' | ' . $title;
     } else if (is_page()) {
         $title = empty(get_the_title()) ? $title : get_the_title() . ' | ' . $title;
+    } else {
+        $title = $title . !empty($description) ? ' - ' . $description : '';
     }
     return array(
         'title'            => $title,
