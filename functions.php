@@ -901,7 +901,7 @@ function dale6_com_echo_title($title, $sep, $seplocation)
     $arr = dale6_com_echo_seo_head($sep);
     return $arr['title'];
 }
-add_filter('wp_title', 'dale6_com_echo_title', 10, 3);
+// add_filter('wp_title', 'dale6_com_echo_title', 10, 3);
 
 /**
  * 获取当前页面url
