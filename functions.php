@@ -835,17 +835,17 @@ add_filter('bloginfo', 'dale6_com_xianzhi_info', 10, 2);
  * @since 1.0.0
  * @return void
  */
-function dale6_com_echo_seo_head()
+function dale6_com_echo_seo_head($fengefu = '')
 {
     $title = get_bloginfo('name', 'display');
     $description = get_bloginfo('description', 'display');
     $keywords = '';
     if (is_home()) {
-        $title = $title . (!empty($description) ? ' - ' . $description : '');
+        $title = $title . (!empty($description) ? $fengefu . $description : '');
     } elseif (is_single()) {
         $postid = get_the_ID();
         if ($postid) {
-            $title = empty(get_the_title()) ? $title : get_the_title() . ' - ' . $title;
+            $title = empty(get_the_title()) ? $title : get_the_title() . $fengefu . $title;
             // 填写自定义字段description时显示自定义字段的内容，否则使用文章内容前200字作为描述
             $seo_arr = get_post_meta($postid, 'dale6_com_post_seo', true);
             $description1 = isset($seo_arr['seo_description']) ? $seo_arr['seo_description'] : '';
@@ -872,11 +872,11 @@ function dale6_com_echo_seo_head()
     } else if (is_tag() || is_tax() || is_category()) {
         $description = term_description();
         $tmp = single_term_title('', false);
-        $title = empty($tmp) ? '' : $tmp . ' | ' . $title;
+        $title = empty($tmp) ? '' : $tmp . $fengefu . $title;
     } else if (is_archive()) {
-        $title = empty(get_the_archive_title()) ? $title : get_the_archive_title() . ' | ' . $title;
+        $title = empty(get_the_archive_title()) ? $title : get_the_archive_title() . $fengefu . $title;
     } else if (is_page()) {
-        $title = empty(get_the_title()) ? $title : get_the_title() . ' | ' . $title;
+        $title = empty(get_the_title()) ? $title : get_the_title() . $fengefu . $title;
     }
     return array(
         'title'            => $title,
@@ -896,12 +896,13 @@ add_action('wp_head', function () {
  * @param $title 文章标题
  * @return string
  */
-function dale6_com_echo_title($title)
+function dale6_com_echo_title($title, $sep, $seplocation)
 {
-    $arr = dale6_com_echo_seo_head();
+    $arr = dale6_com_echo_seo_head($sep);
     return $arr['title'];
 }
-add_filter('dale6_com_echo_title', 'dale6_com_echo_title');
+add_filter('wp_title', 'dale6_com_echo_title', 10, 3);
+
 /**
  * 获取当前页面url
  * @author dale6.com <gaojie11@163.com>

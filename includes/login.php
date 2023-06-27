@@ -1,4 +1,3 @@
-
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content p-5">
@@ -24,8 +23,9 @@
                         <button type="button" class="btn btn-success" onclick="ds_login(this);"><?php _e('登录', 'dalewenzhang'); ?></button>
                     </div>
 
-                    <p>本网站不用注册,实行邮件验证码登录!</p>
-                    <p>请谨慎发言!</p>
+                    <p><?php _e('本网站不用注册,实行邮件验证码登录!', 'dalewenzhang'); ?></p>
+                    <p><?php _e('请谨慎发言!', 'dalewenzhang'); ?></p>
+
                 </div>
                 <div id="userlogin"></div>
             </div>
