@@ -33,7 +33,7 @@ function dale6_com_theme_setup()
     // 该功能在HTML <head>中增加了RSS提要链接
     add_theme_support('automatic-feed-links');
     // 在自定义主题里可定义项上显示标签
-    // add_theme_support('title-tag');
+    add_theme_support('title-tag');
     // 添加文章格式支持   get_post_format( $post->ID )就能确定文章所属格式    has_post_format( 'video' )
     // $post_formats = array('aside', 'image', 'gallery', 'video', 'audio', 'link', 'quote', 'status');
     // add_theme_support('post-formats', $post_formats);
