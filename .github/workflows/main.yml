@@ -3,53 +3,56 @@ name: 推送有标签为v开头则以标签名称发布版本
 on:
   push:
     tags:
-    - 'v*'
+      - "v*"
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Get version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+      
+      - name: Create project folder
+        run: mkdir ${{ github.event.repository.name }}
 
-    - name: Create project folder
-      run: mkdir ${{ github.event.repository.name }}
+      - name: Copy project files
+        run: cp -R ./* ${{ github.event.repository.name }}
 
-    - name: Copy project files
-      run: cp -R ./* ${{ github.event.repository.name }}
+      - name: Zip project folder
+        run: zip -r ${{ github.event.repository.name }}.zip ${{ github.event.repository.name }}
 
-    - name: Zip project folder
-      run: zip -r ${{ github.event.repository.name }}.zip ${{ github.event.repository.name }}
+      - name: Create new release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          release_name: ${{ steps.get_version.outputs.VERSION }}
+          body: ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: false
 
-    - name: Create new release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.sha }}
-        release_name: Release ${{ github.sha }}
-        body: |
-          Release ${{ github.sha }}
-        draft: false
-        prerelease: false
+      - name: Upload zip file
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.event.repository.name }}.zip
+          asset_name: ${{ github.event.repository.name }}.zip
+          asset_content_type: application/zip
 
-    - name: Upload zip file
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ github.event.repository.name }}.zip
-        asset_name: ${{ github.event.repository.name }}.zip
-        asset_content_type: application/zip
-
-    - name: 给钉钉机器人发送消息
-      env:
-        WEBHOOK: ${{ secrets.DINGDING_WEBHOOK }}
-      run: |
-        curl -X POST \
-          $WEBHOOK \
-          -H 'Content-Type: application/json' \
-          -d '{"msgtype": "text","text": {"content": "GITHUB\r\n仓库${{github.repository}}\r\n发布${{steps.get_version.outputs.VERSION}}\r\n下载地址: https://github.com/gaojie1592/releases/tag/${{steps.get_version.outputs.VERSION}}"}}'
+      - name: 给钉钉机器人发送消息
+        env:
+          WEBHOOK: ${{ secrets.DINGDING_WEBHOOK }}
+        run: |
+          curl -X POST \
+            $WEBHOOK \
+            -H 'Content-Type: application/json' \
+            -d '{"msgtype": "text","text": {"content": "GITHUB\r\n仓库:${{github.repository}}\r\n发布:${{steps.get_version.outputs.VERSION}}\r\n说明:${{ github.event.head_commit.message }}\r\n下载地址:${{ steps.create_release.outputs.upload_url }}'
