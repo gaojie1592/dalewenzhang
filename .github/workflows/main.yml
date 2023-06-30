@@ -15,7 +15,7 @@ jobs:
         
       - name: Get version
         id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        run: echo "VERSION="${GITHUB_REF/refs\/tags\//} >> "$GITHUB_ENV"
       
       - name: Create project folder
         run: mkdir ${{ github.event.repository.name }}
