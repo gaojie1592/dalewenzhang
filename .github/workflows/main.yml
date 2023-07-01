@@ -17,11 +17,13 @@ jobs:
         run: |
           find . -name ".git" | xargs rm -Rf
           find . -name ".github" | xargs rm -Rf
-          cd ..
           echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          pwd
+          cd ..
+          pwd
       
       - name: Zip project folder
-        run: zip -q -r ${{ github.event.repository.name }}.zip ${{ github.event.repository.name }}
+        run: zip -q -r ${{ github.event.repository.name }}.zip ./${{ github.event.repository.name }}
 
       - name: Create new release
         id: create_release
