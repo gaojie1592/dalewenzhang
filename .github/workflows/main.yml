@@ -14,7 +14,10 @@ jobs:
         uses: actions/checkout@v2
  
       - name: Get version
-        run: echo "VERSION="${{GITHUB_REF/refs/tags/}} >> $GITHUB_ENV
+        run: |
+          tag=${{ env.GITHUB_REF }}
+          tag=${tag/refs\/tags\//}
+          echo "VERSION=$tag" >> $GITHUB_ENV
       
       - name: Debug message
         run: |
