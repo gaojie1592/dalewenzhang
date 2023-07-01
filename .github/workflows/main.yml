@@ -49,8 +49,8 @@ jobs:
 
       - name: 用PHP处理特殊字符串
         run: |
-          echo "<?php unset(\$argv[0]);\$c=implode('',\$argv);echo json_encode(array('msgtype'=>'markdown','markdown'=>array('title'=>'GITHUB消息','content'=> \$c)));" > json_encode.php
-          encode=$(php json_encode.php "#### 仓库:${{ github.repository }} \n 发布:${{ env.TAG_NAME }} \n 说明:${{ github.event.head_commit.message }} \n 下载地址:${{ steps.upload_data.outputs.browser_download_url }}")
+          echo "<?php unset(\$argv[0]);\$c=implode('',\$argv);echo json_encode(array('msgtype'=>'markdown','markdown'=>array('title'=>'GITHUB消息','text'=> \$c)));" > json_encode.php
+          encode=$(php json_encode.php "#### GITHUB发布版本消息 \n 仓库:${{ github.repository }} \n 发布:${{ env.TAG_NAME }} \n 说明:${{ github.event.head_commit.message }} \n 下载地址:${{ steps.upload_data.outputs.browser_download_url }}")
           echo "CONTENTS=$encode" >> $GITHUB_ENV
 
       - name: 给钉钉机器人发送消息
