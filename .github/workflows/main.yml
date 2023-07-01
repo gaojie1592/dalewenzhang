@@ -47,17 +47,9 @@ jobs:
           asset_name: ${{ github.event.repository.name }}.zip
           asset_content_type: application/zip
           
-      - name: 消息字符串JSON格式化
-        run: |
-          contents="GITHUB\r\n仓库:${{github.repository}}\r\n发布:${{ env.TAG_NAME }}\r\n说明:${{ github.event.head_commit.message }}\r\n下载地址:${{ steps.upload_data.outputs.browser_download_url }}"
-          json_var=$(php -r '$arr = array("msgtype" => "text","text" => array("content" => ""));$arr["text"]["content"] = "$contents";echo json_encode($arr);')
-          echo "DD_CONTENTS=$json_var" >> $GITHUB_ENV
-          
       - name: 给钉钉机器人发送消息
-        env:
-          WEBHOOK: ${{ secrets.DINGDING_WEBHOOK }}
         run: |
           curl -X POST \
             $WEBHOOK \
             -H 'Content-Type: application/json' \
-            -d '${{ env.DD_CONTENTS }}'
+            -d '{"msgtype":"text","text":{"content":"GITHUB消息\\n仓库\:${{toJSON(github.repository)}}\\n发布\:${{toJSON(env.TAG_NAME)}}\\n说明\:${{toJSON(github.event.head_commit.message)}}\\n下载地址\:${{toJSON(steps.upload_data.outputs.browser_download_url)}}"}}'
