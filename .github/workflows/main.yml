@@ -13,18 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
  
-      - name: Get version
+      - name: Get TAG_NAME
         run: |
-          tag=${{ env.GITHUB_REF }}
-          tag=${tag/refs\/tags\//}
-          echo "VERSION=$tag" >> $GITHUB_ENV
-      
-      - name: Debug message
-        run: |
-          pwd
           cd ..
-          pwd
-
+          echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+      
       - name: Zip project folder
         run: zip -q -r ${{ github.event.repository.name }}.zip ${{ github.workspace }}
 
@@ -34,8 +27,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.VERSION }}
-          release_name: ${{ env.VERSION }}
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: ${{ env.TAG_NAME }}
           body: ${{ github.event.head_commit.message }}
           draft: false
           prerelease: false
@@ -64,4 +57,4 @@ jobs:
           curl -X POST \
             $WEBHOOK \
             -H 'Content-Type: application/json' \
-            -d '{"msgtype": "text","text": {"content": "GITHUB\r\n仓库:${{github.repository}}\r\n发布:${{steps.get_version.outputs.VERSION}}\r\n说明:${{ github.event.head_commit.message }}\r\n下载地址:${{ steps.create_release.outputs.upload_url }}'
+            -d '{"msgtype": "text","text": {"content": "GITHUB\r\n仓库:${{github.repository}}\r\n发布:${{ env.TAG_NAME }}\r\n说明:${{ github.event.head_commit.message }}\r\n下载地址:${{ steps.create_release.outputs.upload_url }}'
