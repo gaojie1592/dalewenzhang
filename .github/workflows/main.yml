@@ -38,6 +38,7 @@ jobs:
 
       - name: 上传压缩包到新版本
         uses: actions/upload-release-asset@v1
+        id: upload_data
         env:
           GITHUB_TOKEN: ${{ secrets.GITHU_TOKEN }}
         with:
@@ -48,8 +49,8 @@ jobs:
           
       - name: 消息字符串JSON格式化
         run: |
-          contents="GITHUB\r\n仓库:${{github.repository}}\r\n发布:${{ env.TAG_NAME }}\r\n说明:${{ github.event.head_commit.message }}\r\n下载地址:${{ steps.create_release.outputs.upload_url }}"
-          json_var=$(echo $contents | jq -R -s -c 'split("\n")[:-1]')
+          contents="GITHUB\r\n仓库:${{github.repository}}\r\n发布:${{ env.TAG_NAME }}\r\n说明:${{ github.event.head_commit.message }}\r\n下载地址:${{ steps.upload_data.outputs.browser_download_url }}"
+          json_var=$(php -r '$arr = array("msgtype" => "text","text" => array("content" => ""));$arr["text"]["content"] = "$contents";echo json_encode($arr);')
           echo "DD_CONTENTS=$json_var" >> $GITHUB_ENV
           
       - name: 给钉钉机器人发送消息
@@ -59,4 +60,4 @@ jobs:
           curl -X POST \
             $WEBHOOK \
             -H 'Content-Type: application/json' \
-            -d '{"msgtype": "text","text": {"content": "${{ env.DD_CONTENTS }}"}}'
+            -d '${{ env.DD_CONTENTS }}'
