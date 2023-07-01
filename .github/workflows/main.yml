@@ -1,61 +1,60 @@
-name: Release Workflow
+name: 推送有标签为v开头则以标签名称发布版本
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
 
 jobs:
   release:
+    name: Release
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Check release version
-        run: |
-          version=$(git log --format=%B -n 1 ${{ github.sha }})
-          if [[ $version == v* ]]; then
-            echo "::set-output name=tag::${version}"
-            echo "::set-output name=msg::${version:1}"
-          else
-            echo "Release version does not start with 'v'"
-            exit 1
-          fi
+      - name: Get version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
       - name: Create project folder
-        run: mkdir ${{ github.repository }}
+        run: mkdir ${{ github.event.repository.name }}
 
-      - name: Copy files to project folder
-        run: cp -r * ${{ github.repository }}
+      - name: Copy project files
+        run: cp -R ./* ${{ github.event.repository.name }}
 
-      - name: Compress project folder
-        run: zip -r ${{ github.repository }}.zip ${{ github.repository }}
+      - name: Zip project folder
+        run: zip -r ${{ github.event.repository.name }}.zip ${{ github.event.repository.name }}
 
-      - name: Upload release attachment
-        uses: actions/upload-release-asset@v1
+      - name: Create new release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ${{ github.repository }}.zip
-          asset_name: ${{ github.repository }}.zip
-          asset_content_type: application/zip
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          release_name: ${{ steps.get_version.outputs.VERSION }}
+          body: ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: false
 
+      - name: Upload zip file
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.event.repository.name }}.zip
+          asset_name: ${{ github.event.repository.name }}.zip
+          asset_content_type: application/zip
+          
       - name: Debug messages
         run: |
           echo "Tag: ${{ steps.check_release.outputs.tag }}"
           echo "Message: ${{ steps.check_release.outputs.msg }}"
           echo "Project folder: ${{ github.repository }}"
           echo "Zip file: ${{ github.repository }}.zip"
-
+          
       - name: 给钉钉机器人发送消息
         env:
           WEBHOOK: ${{ secrets.DINGDING_WEBHOOK }}
