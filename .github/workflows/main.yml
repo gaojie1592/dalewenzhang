@@ -17,20 +17,15 @@ jobs:
         id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
       
-        # 显示当前目录下所有文件信息
       - name: Debug message
         run: |
-          ls
           pwd
-
-      - name: 新建项目名称文件夹并且复制所有项目文件到新建的文件夹内,忽略错误
-        run: mkdir ${{ github.event.repository.name }} && mv * ${{ github.event.repository.name }}/ >/dev/null 2>&1 
-      
-      - name: Debug message
-        run: echo "ok"${{ github.event.repository.name }}
+          echo ${{ github.workspace }}
+          cd ..
+          echo ${{ github.workspace }}
 
       - name: Zip project folder
-        run: zip -r ${{ github.event.repository.name }}.zip ${{ github.event.repository.name }}
+        run: zip -q -r ${{ github.event.repository.name }}.zip ${{ github.workspace }}/${{ github.event.repository.name }}
 
       - name: Create new release
         id: create_release
