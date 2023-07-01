@@ -21,10 +21,8 @@ jobs:
           pwd
           cd ..
           pwd
+          zip -r ${{ github.event.repository.name }}.zip ./${{ github.event.repository.name }}
       
-      - name: Zip project folder
-        run: zip -q -r ${{ github.event.repository.name }}.zip ./${{ github.event.repository.name }}
-
       - name: Create new release
         id: create_release
         uses: actions/create-release@v1
