@@ -20,6 +20,12 @@ jobs:
       - name: Create project folder
         run: mkdir ${{ github.event.repository.name }}
 
+      - name: Copy files
+        run: cp -r * ${{ github.event.repository.name }}
+
+      - name: Debug message
+        run: echo "Files copied successfully"
+
       - name: Copy project files
         run: cp -R ./* ${{ github.event.repository.name }}
 
