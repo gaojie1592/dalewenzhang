@@ -10,20 +10,21 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: 拉取这个项目代码
         uses: actions/checkout@v2
  
-      - name: Get TAG_NAME
+      - name: 删除.git,.github文件夹与旗下的所有文件,获取变量TAG_NAME,ZIP_PATH 并创建压缩包
         run: |
           find . -name ".git" | xargs rm -Rf
           find . -name ".github" | xargs rm -Rf
           echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           pwd
           cd ..
-          pwd
+          zip_path=$(pwd)
+          echo "ZIP_PATH=$zip_path" >> $GITHUB_ENV
           zip -r ${{ github.event.repository.name }}.zip ./${{ github.event.repository.name }}
       
-      - name: Create new release
+      - name: 创建一个以标签命名的版本
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -35,13 +36,13 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload zip file
+      - name: 上传压缩包到新版本
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHU_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.event.repository.name }}.zip
+          asset_path: ${{ env.ZIP_PATH }}/${{ github.event.repository.name }}.zip
           asset_name: ${{ github.event.repository.name }}.zip
           asset_content_type: application/zip
           
