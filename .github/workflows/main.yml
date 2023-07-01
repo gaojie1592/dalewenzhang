@@ -21,7 +21,7 @@ jobs:
         run: |
           ll
           echo "ok"${{ github.event.repository.name }}
-          echo "Version: ${{ steps.get_version.outputs.VERSION }
+          echo "Version: ${{ steps.get_version.outputs.VERSION }}
 
       - name: Create project folder
         run: mkdir ${{ github.event.repository.name }}
