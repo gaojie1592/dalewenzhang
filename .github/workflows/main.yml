@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - "v*"
- 
+
 jobs:
   release:
     name: Release
@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: 拉取这个项目代码
         uses: actions/checkout@v2
- 
+
       - name: 删除.git,.github文件夹与旗下的所有文件,获取变量TAG_NAME,ZIP_PATH 并创建压缩包
         run: |
           find . -name ".git" | xargs rm -Rf
@@ -23,7 +23,7 @@ jobs:
           zip_path=$(pwd)
           echo "ZIP_PATH=$zip_path" >> $GITHUB_ENV
           zip -r ${{ github.event.repository.name }}.zip ./${{ github.event.repository.name }}
-      
+
       - name: 创建一个以标签命名的版本
         id: create_release
         uses: actions/create-release@v1
@@ -46,10 +46,13 @@ jobs:
           asset_path: ${{ env.ZIP_PATH }}/${{ github.event.repository.name }}.zip
           asset_name: ${{ github.event.repository.name }}.zip
           asset_content_type: application/zip
-          
+
       - name: 给钉钉机器人发送消息
+        env:
+          WEBHOOK: ${{ secrets.DINGDING_WEBHOOK }}
+          MESSAGE: GITHUB消息\\n仓库\:${{ toJSON(github.repository) }}\\n发布\:${{ toJSON(env.TAG_NAME) }}\\n说明\:${{ toJSON(github.event.head_commit.message) }}\\n下载地址\:${{ toJSON(steps.upload_data.outputs.browser_download_url) }}
         run: |
           curl -X POST \
             $WEBHOOK \
             -H 'Content-Type: application/json' \
-            -d '{"msgtype":"text","text":{"content":"GITHUB消息\\n仓库\:${{toJSON(github.repository)}}\\n发布\:${{toJSON(env.TAG_NAME)}}\\n说明\:${{toJSON(github.event.head_commit.message)}}\\n下载地址\:${{toJSON(steps.upload_data.outputs.browser_download_url)}}"}}'
+            -d '{"msgtype":"text","text":{"content":"$MESSAGE"}}'
