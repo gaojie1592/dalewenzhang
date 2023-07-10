@@ -6,7 +6,7 @@
                 'theme_location'  => 'footer_nav',
                 'container'       => false,
                 'items_wrap'      => '%3$s',
-                'fallback_cb'     => 'to_zhuti_bianji_link',
+                'fallback_cb'     => 'dalewenzhang_to_zhuti_bianji_link',
             ));
             ?>
         </ul>
@@ -15,8 +15,7 @@
         <span class="text-muted">Copyright © <?php echo date("Y") ?></span>
         <a class="text-decoration-none" href="<?php echo esc_url(home_url()) ?>" target="_blank"><?php echo get_bloginfo("name", 'display') ?></a>
         <span class="text-muted"> · 基于 </span><a href="https://wordpress.org" target="_blank">WordPress</a>
-        <span class="text-muted"> · </span><a class="text-decoration-none" href="<?php echo esc_url(home_url()) ?>" target="_blank">使用大乐主题</a>
-        <?php do_action('dale6_com_yejiaozhuijia');?>
+        <span class="text-muted"> · </span><a class="text-decoration-none" href="https://www.dale6.com" target="_blank">使用大乐主题</a>
     </div>
 </div>
 <?php wp_footer() ?>

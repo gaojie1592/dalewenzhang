@@ -2,9 +2,9 @@
 	<div class="card border-0 bg-white mb-3">
 		<div class="card-body">
 			<h5 class="card-title"><?php echo get_comments_number() . __('条评论', 'dalewenzhang'); ?></h5>
-			<ul class="list-group list-group-flush">
+			<ul class="list-group list-group-flush conmment_list">
 				<?php wp_list_comments(array(
-					'callback' => 'dale6_com_echo_comment',
+					'callback' => 'dalewenzhang_echo_comment',
 				)); ?>
 			</ul>
 			<?php $pag_arr = paginate_comments_links(array(
@@ -33,11 +33,10 @@
 	<?php else : ?>
 		<?php
 		global $user_identity;
-		// 评论
 		comment_form(array(
 			'comment_field' => '<textarea aria-label="' . __('书写评论', 'dalewenzhang') . '" id="comment" name="comment" class="form-control" style="height: 100px" required="required"></textarea>',
-			'must_log_in' => '<div class="card-body"><p class="card-title">' .  sprintf(__('必须<a %s> 登录 </a>才能发表评论', 'dalewenzhang'), ' href="" data-bs-toggle="modal" data-bs-target="#exampleModal"') . '</p></div>',
-			'logged_in_as'  => '<p>' . sprintf(__('已登录为<a class="text-danger mx-2" href="%1$s">%2$s</a><a class="text-muted" href="%3$s" title="注销这个账号">注销</a>', 'dalewenzhang'), admin_url('profile.php'), $user_identity, wp_logout_url(this_url())) . '</p>',
+			'must_log_in' => '<div class="card-body"><p class="card-title">' .  sprintf(__('必须<a %s> 登录 </a>才能发表评论', 'dalewenzhang'), ' href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#exampleModal"') . '</p></div>',
+			'logged_in_as'  => '<p>' . sprintf(__('已登录为<a class="text-danger mx-2" href="%1$s">%2$s</a><a class="text-muted" href="%3$s" title="注销这个账号">注销</a>', 'dalewenzhang'), admin_url('profile.php'), $user_identity, wp_logout_url(dalewenzhang_this_url())) . '</p>',
 			'comment_notes_before' => '',
 			'comment_notes_after' => '<div class="mb-3 d-flex">',
 			'class_container' => 'card border-0 bg-white mb-3',

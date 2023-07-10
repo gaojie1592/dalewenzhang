@@ -1,6 +1,6 @@
 <?php
 global $user_ID;
-wp_nonce_field('ajaxpingluntop', 'dale6_com_ajaxpingluntop');
+wp_nonce_field('ajaxpingluntop', 'dalewenzhang_ajaxpingluntop');
 ?>
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
     <div class="container">
@@ -24,7 +24,7 @@ wp_nonce_field('ajaxpingluntop', 'dale6_com_ajaxpingluntop');
                         'theme_location'  => 'head_nav',
                         'container'       => false,
                         'items_wrap'      => '%3$s',
-                        'fallback_cb'     => 'to_zhuti_bianji_link',
+                        'fallback_cb'     => 'dalewenzhang_to_zhuti_bianji_link',
                     ));
                     ?>
                 </ul>
@@ -41,8 +41,8 @@ wp_nonce_field('ajaxpingluntop', 'dale6_com_ajaxpingluntop');
                         <li class="nav-item ps-2 pt-lg-0 pt-2 dropdown">
                             <?php global $user_identity; ?>
                             <button type="button" class="btn btn-outline-dark dropdown-toggle d-flex" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <span class="me-2 dale6_com_user_ico">
-                                    <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/noavatar.svg" data-src="<?php echo get_avatar_url($user_ID, array('size' => 24)) ?>" width="24" height="24" alt="<?php echo $user_identity; ?>">
+                                <span class="me-2 dalewenzhang_user_ico">
+                                    <img src="<?php echo esc_url(get_template_directory_uri()); ?>/img/noavatar.svg" data-src="<?php echo get_avatar_url($user_ID, array('size' => 24)) ?>" width="24" height="24" alt="<?php echo $user_identity; ?>" role="img">
                                 </span>
                                 <?php echo $user_identity ?>
                             </button>
@@ -57,7 +57,7 @@ wp_nonce_field('ajaxpingluntop', 'dale6_com_ajaxpingluntop');
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link px-2" href="<?php echo esc_url(wp_logout_url(this_url())) ?>"><?php _e('退出', 'dalewenzhang') ?></a>
+                                    <a class="nav-link px-2" href="<?php echo esc_url(wp_logout_url(dalewenzhang_this_url())) ?>"><?php _e('退出', 'dalewenzhang') ?></a>
                                 </li>
                             </ul>
                         </li>

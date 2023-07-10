@@ -5,7 +5,7 @@
             'theme_location'  => 'left_nav',
             'container'       => false,
             'items_wrap'      => '%3$s',
-            'fallback_cb'     => 'to_zhuti_bianji_link',
+            'fallback_cb'     => 'dalewenzhang_to_zhuti_bianji_link',
         )); ?>
     </ul>
 </nav>

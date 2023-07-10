@@ -1,0 +1,226 @@
+:root {
+    --dale6-com-text-color: #000;
+    --dale6-com-text-hover-color: #fff;
+    --dale6-com-btn-background-color: #fff;
+    --dale6-com-btn-hover-background-color: rgb(102, 102, 102);
+    --dale6-com-border-px: 1px;
+    --dale6-com-border-color: #000;
+    --dale6-com-border-radius: 0.375rem;
+}
+
+body {
+    font-family: AllianceNo1, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji, PingFang SC, Microsoft Yahei;
+    --tw-text-opacity: 1;
+}
+
+.wm-150px {
+    min-width: 150px !important;
+}
+
+.dsw-80 {
+    min-width: 80px !important;
+}
+
+.dsw-60 {
+    min-width: 60px !important;
+}
+
+.dl_a,
+.dl_a>a,
+.dl_a a {
+    color: var(--dale6-com-text-color) !important;
+}
+
+.dl_a:hover,
+.dl_a>a:hover,
+.dl_a a:hover {
+    color: red !important;
+}
+
+
+/* 多级菜单 */
+
+.dropdown-menu .nav-item:hover {
+    background-color: var(--dale6-com-btn-hover-background-color);
+}
+
+.dropdown-menu:hover,
+.dropdown-menu a:hover {
+    color: var(--dale6-com-text-hover-color) !important;
+}
+
+li,
+ul {
+    list-style-type: none;
+    padding: 0px;
+}
+
+.nav-item>a {
+    max-width: 200px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.itemlist li {
+    font-size: inherit;
+    line-height: 1.25;
+    position: relative;
+}
+
+.itemlist ul {
+    right: 9999rem;
+    top: 100%;
+    position: absolute;
+    z-index: 1021;
+    background-color: var(--dale6-com-btn-background-color);
+    border: var(--dale6-com-border-px) solid var(--dale6-com-border-color);
+    border-radius: var(--dale6-com-border-radius);
+}
+
+.itemlist li.focus>ul,
+.itemlist li:focus>ul,
+.itemlist li:hover>ul {
+    right: 0;
+}
+
+.itemlist ul ul {
+    position: initial;
+}
+
+.itemlist li:focus,
+.itemlist li:focus>a,
+.itemlist li:hover,
+.itemlist li:hover>a {
+    background-color: var(--dale6-com-btn-hover-background-color);
+    color: var(--dale6-com-text-hover-color) !important;
+}
+
+.footerlist>.itemlist ul {
+    display: block;
+    position: unset;
+    left: 0;
+    top: 0;
+    border: unset;
+    border-radius: unset;
+}
+
+.footerlist ul {
+    flex-direction: row !important;
+}
+
+.footerlist li {
+    padding: 5px;
+}
+
+.footerlist>.itemlist li:focus,
+.footerlist>.itemlist li:focus>a,
+.footerlist>.itemlist li:hover,
+.footerlist>.itemlist li:hover>a {
+    background-color: unset;
+    color: unset !important;
+}
+
+@media (max-width: 991px) {
+    .offcanvas-body.d-flex {
+        flex-direction: column !important;
+    }
+    .offcanvas-body.d-flex>.itemlist {
+        flex-grow: 0 !important;
+        align-items: center !important;
+    }
+    .itemlist li,
+    .itemlist ul {
+        position: unset;
+        left: 0;
+        top: 0;
+    }
+    .leftlist {
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+    }
+    .leftlist li {
+        position: relative;
+        padding: 5px;
+    }
+    .leftlist ul {
+        left: 0;
+        top: 100%;
+        position: absolute;
+    }
+}
+
+
+/* 多级菜单结束 */
+
+.input-group .btn {
+    z-index: 0
+}
+
+.text-muted>a,
+.text-muted {
+    color: #a3a3a3
+}
+
+.conmment_list>li>ul {
+    padding-inline-start: 40px;
+}
+
+a:focus-visible,
+.pinglun_up:focus-visible,
+.pinglun_down:focus-visible {
+    outline: black auto 1px !important;
+}
+
+.pinglun_up,
+.pinglun_down {
+    padding: 0;
+}
+
+.pinglun_up>svg,
+.pinglun_down>svg {
+    fill: #babfc4;
+}
+
+.pinglun_up:hover>svg,
+.pinglun_down:hover>svg {
+    fill: red;
+}
+
+.w-150px {
+    max-width: 150px;
+}
+
+.wh-16px {
+    width: 16px;
+    height: 16px;
+}
+
+.dalewenzhang_user_ico>img,
+.dalewenzhang_user_ico_div {
+    height: 100%;
+    text-align: center;
+    font-size: 20px;
+    border-radius: 4px;
+}
+
+
+/* img失败后的样式 */
+
+.img_err {
+    position: relative;
+    cursor: pointer;
+}
+
+.img_err_box {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    font-size: 18px;
+    text-transform: uppercase;
+    border-radius: 4px;
+}
