@@ -39,22 +39,6 @@ function dalewenzhang_theme_setup()
 }
 add_action('after_setup_theme', 'dalewenzhang_theme_setup');
 
-/**
- * 输出前端js用到的数据
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @return void 
- */
-function dalewenzhang_js_data()
-{
-    $data = array(
-        'ajaxurl' => '/wp-admin/admin-ajax.php',
-    );
-    echo '<script>var dalewenzhang_global = ', json_encode($data, JSON_FORCE_OBJECT), '</script>';
-}
-add_action('wp_head', 'dalewenzhang_js_data');
-add_action('admin_enqueue_scripts', 'dalewenzhang_js_data');
-
 // 添加JS到首页 
 if (!function_exists('dalewenzhang_script')) {
     function dalewenzhang_script()
@@ -485,13 +469,58 @@ function dalewenzhang_get_display_name($object)
 function dalewenzhang_xianzhi_info($output, $show)
 {
     // 限制网站名称长度为20字符
-    if ($show == 'name') $output = mb_substr($output, 0, 20, 'utf8');
+    // if ($show == 'name') $output = mb_substr($output, 0, 20, 'utf8');
     // 限制网站介绍长度为200字符
     if ($show == 'description') $output = mb_substr($output, 0, 200, 'utf8');
     return $output;
 }
 add_filter('bloginfo', 'dalewenzhang_xianzhi_info', 10, 2);
 
+/**
+ * 修改登录表单CLASS样式
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return string
+ */
+function dalewenzhang_login_form($loginformstr)
+{
+    $loginformstr = preg_replace(array(
+        '/<p class="login-username">/is',
+        '/<p class="login-username(.*?)class="input"(.*?)<\/p>/is',
+        '/<p class="login-password">/is',
+        '/<p class="login-password(.*?)class="input"(.*?)<\/p>/is',
+        '/<p class="login-submit">/is',
+        '/<p class="login-submit(.*?)class="button button-primary"(.*?)<\/p>/is',
+        '/<p class="login-username(.*?)">(.*?)<label(.*?)<\/label>(.*?)<\/p>/is',
+        '/<p class="login-password(.*?)">(.*?)<label(.*?)<\/label>(.*?)<\/p>/is',
+        '/<p class="login-username(.*?)<input(.*?)class="(.*?)"(.*?)<\/p>/is',
+        '/<p class="login-password(.*?)<input(.*?)class="(.*?)"(.*?)<\/p>/is',
+    ), array(
+        '<p class="login-username form-floating mb-4">',
+        '<p class="login-username$1class="input form-control"$2</p>',
+        '<p class="login-password form-floating mb-4">',
+        '<p class="login-password$1class="input form-control"$2</p>',
+        '<p class="login-submit mb-4 d-grid">',
+        '<p class="login-submit$1class="btn btn-success"$2</p>',
+        '<p class="login-username$1">$2$4<label$3</label></p>',
+        '<p class="login-password$1">$2$4<label$3</label></p>',
+        '<p class="login-username$1<input$2 placeholder="username" class="$3"$4</p>',
+        '<p class="login-password$1<input$2 placeholder="password" class="$3"$4</p>',
+    ), $loginformstr);
+    return $loginformstr;
+}
+add_filter('dalewenzhang_login_form', 'dalewenzhang_login_form');
+/**
+ * 追加注册链接
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return string
+ */
+function dalewenzhang_login_form_bottom($str)
+{
+    return wp_register('', '', false);
+}
+add_filter('login_form_bottom', 'dalewenzhang_login_form_bottom');
 /**
  * 获取当前页面url
  * @author dale6.com <gaojie11@163.com>
@@ -554,124 +583,6 @@ function dalewenzhang_pingback_or_trackback_display_name($comment)
 }
 add_filter('dalewenzhang_pingback_or_trackback_display_name', 'dalewenzhang_pingback_or_trackback_display_name');
 
-
-function dalewenzhang_ajax_loginok()
-{
-    wp_send_json_success(array('c' => 300, 'ms' => __('已登录!请刷新!', 'dalewenzhang'), 'd' => esc_url(home_url())));
-    wp_die();
-}
-add_action('wp_ajax_ajaxdenglu', 'dalewenzhang_ajax_loginok');
-/**
- * AJAX登录与注册,没有账号则注册后登录,有账号直接登录
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @return void 返回登录结果
- */
-function dalewenzhang_ajax_login()
-{
-    // 验证来路,后期需要加上其他方式验证来路
-    if (!isset($_POST['email']) || !isset($_POST['code']) || !is_email(trim($_POST['email']))) {
-        wp_send_json_error(array('c' => 400, 'ms' => __('邮箱地址或验证码不能为空', 'dalewenzhang')));
-        exit();
-    }
-
-    $email = trim($_POST['email']);
-    $code = trim($_POST['code']) * 1;
-
-    // 验证码验证
-    $verificationCode = get_transient('verification_code_' . $email);
-    if ($verificationCode && $verificationCode == $code) {
-        // 获取验证码过期时间
-        $expiration = get_option('_transient_timeout_verification_code_' . $email);
-        $current_time = time();
-
-        if ($expiration && $expiration > $current_time) {
-            // 验证码未过期
-            // 执行相关操作，例如注册用户、更新用户密码等
-            delete_transient('verification_code_' . $email);
-            delete_option('_transient_timeout_verification_code_' . $email);
-            // wp_send_json_success('验证码验证通过');
-            // 检查邮箱是否已注册
-            $user = get_user_by('email', $email);
-
-            if (!$user) {
-                // 邮箱未注册，重新注册用户
-                $username = 'new_user_' . wp_rand(); // 生成一个随机用户名
-                $password = wp_generate_password(); // 生成一个随机密码
-
-                $user_id = wp_create_user($username, $password, $email);
-                if (is_wp_error($user_id)) {
-                    wp_send_json_error(array('c' => 400, 'ms' => __('新用户注册失败', 'dalewenzhang')));
-                }
-            }
-            // 邮箱已注册，登录账号
-            wp_set_auth_cookie($user->ID, true);
-            $referer = wp_get_referer();
-            if (!$referer) {
-                $referer = esc_url(home_url());
-            }
-            wp_send_json_success(array('c' => 300, 'ms' => __('登录成功!', 'dalewenzhang'), 'd' => esc_url($referer)));
-            wp_die();
-        } else {
-            // 验证码已过期
-            delete_transient('verification_code_' . $email);
-            delete_option('_transient_timeout_verification_code_' . $email);
-            wp_send_json_error(array('c' => 400, 'ms' => __('验证码已过期，请重新获取', 'dalewenzhang')));
-        }
-    } else {
-        wp_send_json_error(array('c' => 400, 'ms' => __('验证码验证失败，请重新输入', 'dalewenzhang')));
-    }
-}
-add_action('wp_ajax_nopriv_ajaxdenglu', 'dalewenzhang_ajax_login');
-
-/**
- * AJAX发送邮件验证码
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @return void 返回结果
- */
-function dalewenzhang_sendmailcode()
-{
-    if (!isset($_POST['email'])) {
-        wp_send_json_error(__('邮箱地址不能为空', 'dalewenzhang'));
-        exit();
-    }
-
-    $email = $_POST['email'];
-    // 检查是否已存在验证码
-    $existingCode = get_transient('verification_code_' . $email);
-    if ($existingCode) {
-        // 获取验证码的过期时间
-        $expiration = get_option('_transient_timeout_verification_code_' . $email);
-        $current_time = time();
-
-        if ($expiration && $expiration > $current_time) {
-            // 验证码未过期，返回错误消息
-            wp_send_json_error(__('验证码已发送，请稍后再试', 'dalewenzhang'));
-            exit();
-        }
-    }
-    // 生成验证码
-    $verificationCode = rand(100000, 999999);
-
-    $subject = get_bloginfo("name", 'display') . __('邮箱验证码', 'dalewenzhang');
-    $body = sprintf(
-        __("这是由 %s 发送的一封验证邮件，请不要回复！\r\n\r\n如果能收到这封邮件，说明您的邮箱能够正常使用！\r\n\r\n如果您不知道这封邮件的来龙去脉，请忽略此邮件并且不要告知任何人此邮件的内容！\r\n\r\n验证码：%s \r\n\r\n验证码在10分钟内有效!\r\n\r\n如果您有任何建议请联系我们：%s", 'dalewenzhang'),
-        get_bloginfo("name", 'display') . "<" . esc_url(home_url()) . ">",
-        $verificationCode,
-        get_option('admin_email'),
-    );
-
-    // 发送邮件
-    if (wp_mail($email, $subject, $body)) {
-        // 将验证码保存到transient中
-        set_transient('verification_code_' . $email, $verificationCode, 10 * MINUTE_IN_SECONDS);
-        wp_send_json_success(__('验证码发送成功，请查收邮件', 'dalewenzhang'));
-    } else {
-        wp_send_json_error(__('验证码发送失败，请稍后再试', 'dalewenzhang'));
-    }
-}
-add_action('wp_ajax_nopriv_sendmailcode', 'dalewenzhang_sendmailcode');
 
 /**
  * 角色注销后跳转地址

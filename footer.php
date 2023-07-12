@@ -13,9 +13,9 @@
     </div>
     <div class="p-2 fw-light dl_a text-center">
         <span class="text-muted">Copyright © <?php echo date("Y") ?></span>
-        <a class="text-decoration-none" href="<?php echo esc_url(home_url()) ?>" target="_blank"><?php echo get_bloginfo("name", 'display') ?></a>
+        <a class="text-decoration-none text-wrap" href="<?php echo esc_url(home_url()) ?>" target="_blank"><?php echo get_bloginfo("name", 'display') ?></a>
         <span class="text-muted"> · 基于 </span><a href="https://wordpress.org" target="_blank">WordPress</a>
-        <span class="text-muted"> · </span><a class="text-decoration-none" href="https://www.dale6.com" target="_blank">使用大乐主题</a>
+        <span class="text-muted"> · </span><a class="text-decoration-none" href="https://www.dale6.com" target="_blank">使用大乐文章主题</a>
     </div>
 </div>
 <?php wp_footer() ?>

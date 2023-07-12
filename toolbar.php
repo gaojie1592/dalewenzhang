@@ -1,20 +1,20 @@
 <?php
 global $user_ID;
-wp_nonce_field('ajaxpingluntop', 'dalewenzhang_ajaxpingluntop');
+$sitename = get_bloginfo('name', 'display');
 ?>
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
     <div class="container">
         <?php if (has_custom_logo()) : ?>
             <?php echo get_custom_logo() ?>
         <?php else : ?>
-            <a class="navbar-brand fw-bold" href="<?php echo esc_url(home_url()); ?>"><?php echo $sitename = get_bloginfo('name', 'display'); ?></a>
+            <a class="navbar-brand fw-bold text-wrap" href="<?php echo esc_url(home_url()); ?>"><?php echo $sitename; ?></a>
         <?php endif; ?>
         <button class="navbar-toggler" type="button" aria-label="<?php _e('打开菜单', 'dalewenzhang') ?>" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasNavbarLabel"><?php echo $sitename ?></h5>
+                <h5 class="offcanvas-title text-wrap" id="offcanvasNavbarLabel"><?php echo $sitename ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="<?php _e('关闭菜单', 'dalewenzhang') ?>"></button>
             </div>
             <div class="offcanvas-body d-flex">

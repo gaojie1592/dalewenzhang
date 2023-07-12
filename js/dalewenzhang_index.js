@@ -45,9 +45,9 @@ function ds_comp_usermail(id) {
     return false;
 }
 
-function ds_post(data, fn) {
+function ds_post(url, data, fn) {
     var Http = createXHR();
-    Http.open("POST", dalewenzhang_global['ajaxurl'], true);
+    Http.open("POST", url, true);
     Http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     Http.onreadystatechange = () => {
         if (Http.readyState == 4) fn && fn(Http);
@@ -129,45 +129,6 @@ dale6_addLoadEvent(function() {
         e.appendChild(div);
     });
 });
-
-function ds_login(e) {
-    var useremail = document.getElementById('r_mail');
-    if (!ds_comp_usermail("r_mail")) {
-        useremail.focus();
-        return false;
-    }
-    var codemm = document.getElementById('codemm');
-    if (codemm.value.trim().replace(/(^s*)|(s*$)/g, "").length == 0) {
-        codemm.focus();
-        return false;
-    }
-    ds_djs(e, 3, 1);
-    ds_post({
-        'action': 'ajaxdenglu',
-        'email': useremail.value,
-        'code': codemm.value,
-    }, function(a) {
-        var b = JSON.parse(a.responseText);
-        document.getElementById('userlogin').innerHTML = '<span style="color:' + (b.success ? 'green' : 'red') + ';">' + b.data.ms + '</span>';
-        if (b.data.c == 300) window.location.href = b.data.d;
-    });
-}
-
-function ds_send_mail_code(e) {
-    var useremail = document.getElementById('r_mail');
-    if (!ds_comp_usermail("r_mail")) {
-        useremail.focus();
-        return false;
-    }
-    ds_djs(e, 60, 1);
-    ds_post({
-        'action': 'sendmailcode',
-        'email': useremail.value,
-    }, function(a) {
-        var b = JSON.parse(a.responseText);
-        document.getElementById('userlogin').innerHTML = '<span style="color:' + (b.success ? 'green' : 'red') + ';">' + b.data + '</span>';
-    });
-}
 
 dale6_addLoadEvent(function() {
     var links, i, len,
