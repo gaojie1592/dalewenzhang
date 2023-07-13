@@ -229,7 +229,7 @@ function dalewenzhang_add_comment_children($comments, $comment)
  * 输出评论
  * @author dale6.com <gaojie11@163.com>
  * @since 1.0.0
- * @param obj      $comment  当前输出评论对象
+ * @param object   $comment  当前输出评论对象
  * @param array    $args     参数数组
  * @param int      $depth    当前深度层数
  * @return void    输出结果
