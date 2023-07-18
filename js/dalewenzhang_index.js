@@ -1,4 +1,4 @@
-function dale6_addLoadEvent(func) {
+function dalewenzhang_addLoadEvent(func) {
     var oldonload = window.onload;
     if (typeof window.onload != 'function') {
         window.onload = func;
@@ -10,7 +10,7 @@ function dale6_addLoadEvent(func) {
     }
 }
 
-function ds_djs(e, time, t) {
+function dalewenzhang_djs(e, time, t) {
     if (!e.dstHTML) e.dstHTML = e.innerHTML;
     if (time <= 0) {
         e.innerHTML = e.dstHTML;
@@ -21,82 +21,12 @@ function ds_djs(e, time, t) {
     time--;
     e.disabled = true;
     setTimeout(function() {
-        ds_djs(e, time, t);
+        dalewenzhang_djs(e, time, t);
     }, 1000);
     e.innerHTML = e.dstHTML + (t ? '(' + time + ')' : '');
 }
 
-
-function ds_is_checked(radio_class) {
-    let inputs = document.getElementsByName(radio_class);
-    for (var i = 0; i < inputs.length; i++) {
-        if (inputs[i].checked) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function ds_comp_usermail(id) {
-    var reg = /^[0-9a-zA-Z_.-]+[@][0-9a-zA-Z_.-]+([.][a-zA-Z]+){1,2}$/;
-    if (reg.test(document.getElementById(id).value.trim())) {
-        return true;
-    }
-    return false;
-}
-
-function ds_post(url, data, fn) {
-    var Http = createXHR();
-    Http.open("POST", url, true);
-    Http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    Http.onreadystatechange = () => {
-        if (Http.readyState == 4) fn && fn(Http);
-    };
-    Http.send(ds_send_toString(data));
-}
-
-function createXHR() {
-    var XHR = [
-        function() {
-            return new XMLHttpRequest();
-        },
-        function() {
-            return new ActiveXObject("Msxml2.XMLHTTP");
-        },
-        function() {
-            return new ActiveXObject("Msxml3.XMLHTTP");
-        },
-        function() {
-            return new ActiveXObject("Microsoft.XMLHTTP");
-        }
-    ];
-    var xhr = null;
-    for (var i = 0; i < XHR.length; i++) {
-        try {
-            xhr = XHR[i]();
-        } catch (e) {
-            continue;
-        }
-        break;
-    }
-    return xhr;
-}
-
-function ds_send_toString(data) {
-    var a = [];
-    if (data.constructor == Array) {
-        for (var i = 0; i < data.length; i++) {
-            a.push(data[i].name + "=" + encodeURIComponent(data[i].value));
-        }
-    } else {
-        for (var i in data) {
-            a.push(i + "=" + encodeURIComponent(data[i]));
-        }
-    }
-    return a.join("&");
-}
-
-dale6_addLoadEvent(function() {
+dalewenzhang_addLoadEvent(function() {
     const colors = ["#778ca3", "#F57F17", "#5ec162", "#9575CD", "#999", "#00BCD4", "#c57c3b", "#6D4C41", "#5C6BC0", "#FBC02D", "#45aaf2", "#757575", "#EF5350", "#7986CB", "#2bcbba", "#37474F", "#546E7A", "#00838F", "#FFD54F", "#607D8B"];
     let colorIndex = 0;
     document.querySelectorAll('.dalewenzhang_user_ico').forEach(function(e) {
@@ -130,7 +60,7 @@ dale6_addLoadEvent(function() {
     });
 });
 
-dale6_addLoadEvent(function() {
+dalewenzhang_addLoadEvent(function() {
     var links, i, len,
         menu = document.querySelector('.navbar-nav');
     if (!menu) {
@@ -155,4 +85,32 @@ dale6_addLoadEvent(function() {
             self = self.parentElement;
         }
     }
+});
+
+dalewenzhang_addLoadEvent(function() {
+    var myOffcanvas = new bootstrap.Offcanvas(document.getElementById('offcanvasTop'));
+    if (!myOffcanvas) return false;
+    myOffcanvas._element.addEventListener('shown.bs.offcanvas', function() {
+        var inputElement = document.getElementById("ssinput");
+        inputElement.focus();
+    });
+});
+
+dalewenzhang_addLoadEvent(function() {
+    var textarea = document.getElementById('comment');
+    if (!textarea) return false;
+    textarea.addEventListener('keydown', function(event) {
+        if (event.keyCode === 13 && !event.shiftKey) {
+            event.preventDefault();
+            document.getElementById('commentform').submit();
+        }
+        if (event.keyCode === 13 && event.shiftKey) {
+            event.preventDefault();
+            var startPos = textarea.selectionStart;
+            var endPos = textarea.selectionEnd;
+            textarea.value = textarea.value.substring(0, startPos) + '\n' + textarea.value.substring(endPos, textarea.value.length);
+            textarea.selectionStart = startPos + 1;
+            textarea.selectionEnd = startPos + 1;
+        }
+    });
 });

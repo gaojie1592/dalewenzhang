@@ -17,10 +17,17 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-12">
                 <?php comments_template(); ?>
             </div>
         </div>
+        <?php if (is_active_sidebar('xiabianlan')) : ?>
+            <div class="row">
+                <div class="col-12">
+                    <?php dynamic_sidebar('xiabianlan'); ?>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
     <?php get_footer() ?>
 

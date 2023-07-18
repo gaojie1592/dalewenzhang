@@ -38,27 +38,97 @@ body {
 }
 
 
+/* 小工具图标修改,必须放在wp-admin页面的js文件里面 */
+
+.widget[id*="dalwwenzhang"] .widget-title:before {
+    content: '\f109';
+    /* 替换为您想要的图标代码，例如：'\f123' */
+    font-family: 'dashicons';
+    display: inline-block;
+    margin-right: 5px;
+}
+
+
+/* 宽对齐样式 */
+
+.alignwide {
+    background-color: #f2f2f2;
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.bypostauthor {}
+
+.alignleft {}
+
+.alignright {}
+
+.aligncenter {}
+
+.wp-caption {}
+
+.wp-caption-text {}
+
+.gallery-caption {}
+
+
 /* 多级菜单 */
 
-.dropdown-menu .nav-item:hover {
+.itemlist a:hover {
     background-color: var(--dale6-com-btn-hover-background-color);
 }
 
-.dropdown-menu:hover,
-.dropdown-menu a:hover {
+.itemlist:hover,
+.itemlist a:hover {
+    color: var(--dale6-com-text-hover-color) !important;
+}
+
+.itemlist a {
+    color: var(--dale6-com-text-color) !important;
+}
+
+.itemlist ul {
+    background-color: var(--dale6-com-btn-background-color);
+}
+
+.itemlist li:focus,
+.itemlist li:focus>a,
+.itemlist li:hover,
+.itemlist li:hover>a {
+    background-color: var(--dale6-com-btn-hover-background-color);
     color: var(--dale6-com-text-hover-color) !important;
 }
 
 li,
 ul {
     list-style-type: none;
+}
+
+ul {
     padding: 0px;
 }
 
-.nav-item>a {
-    max-width: 200px !important;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.itemlist>li {
+    padding: 10px;
+}
+
+.itemlist>li>ul a {
+    line-height: 2.5;
+    padding: 10px;
+}
+
+.itemlist a {
+    max-width: 100%;
+    text-decoration: none;
+}
+
+.itemlist>li>ul {
+    width: 200px;
+    word-break: break-all;
+    border: var(--dale6-com-border-px) solid var(--dale6-com-border-color);
+    border-radius: var(--dale6-com-border-radius);
 }
 
 .itemlist li {
@@ -72,9 +142,6 @@ ul {
     top: 100%;
     position: absolute;
     z-index: 1021;
-    background-color: var(--dale6-com-btn-background-color);
-    border: var(--dale6-com-border-px) solid var(--dale6-com-border-color);
-    border-radius: var(--dale6-com-border-radius);
 }
 
 .itemlist li.focus>ul,
@@ -85,14 +152,6 @@ ul {
 
 .itemlist ul ul {
     position: initial;
-}
-
-.itemlist li:focus,
-.itemlist li:focus>a,
-.itemlist li:hover,
-.itemlist li:hover>a {
-    background-color: var(--dale6-com-btn-hover-background-color);
-    color: var(--dale6-com-text-hover-color) !important;
 }
 
 .footerlist>.itemlist ul {
@@ -116,7 +175,6 @@ ul {
 .footerlist>.itemlist li:focus>a,
 .footerlist>.itemlist li:hover,
 .footerlist>.itemlist li:hover>a {
-    background-color: unset;
     color: unset !important;
 }
 

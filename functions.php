@@ -19,7 +19,7 @@ function dalewenzhang_theme_setup()
     // add_theme_support('post-formats', $post_formats);
     // 开启文章特色图
     add_theme_support('post-thumbnails');
-    /** HTML5 support **/
+    // HTML5 特性
     add_theme_support('html5', array('comment-list', 'comment-form', 'search-form', 'gallery', 'caption', 'script', 'style'));
     // 这个功能可以让在定制器中管理的小部件有选择地刷新。这个功能在WordPress 4.5中是可用的。
     // add_theme_support('customize-selective-refresh-widgets');
@@ -32,13 +32,251 @@ function dalewenzhang_theme_setup()
         'default-attachment'     => 'scroll',
     );
     add_theme_support('custom-background', $bg_defaults);
-    // 自定义页头
-    // add_theme_support('custom-header');
+
     // 自定义logo
     add_theme_support('custom-logo');
+    // 自定义页头
+    add_theme_support('custom-header');
+    // 启用编辑器响应式嵌入功能
+    add_theme_support('responsive-embeds');
+    // 启用编辑器宽对齐功能,css样式表设置 .alignwide样式
+    add_theme_support('align-wide');
+    // 启用区块样式支持
+    // add_theme_support('wp-block-styles');
+    // 添加小工具
+    add_theme_support('widgets');
+    // 添加编辑小工具
+    add_theme_support('widgets-block-editor');
+
+    // register_block_pattern()
+    // register_block_style();
+    // add_editor_style();
 }
 add_action('after_setup_theme', 'dalewenzhang_theme_setup');
+/**
+ * 注册边栏
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
+function dalewenzhang_zhucebianlan()
+{
+    include_once __DIR__ . '/widget/remenbiaoqian.php';
+    register_widget('remenbiaoqian');
+    include_once __DIR__ . '/widget/zuixinpinglun.php';
+    register_widget('zuixinpinglun');
+    include_once __DIR__ . '/widget/zuixinwenzhang.php';
+    register_widget('zuixinwenzhang');
+    // 注册边栏
+    register_sidebar(array(
+        'name'          => __('右边栏', 'dalewenzhang'),
+        'id'            => 'youbianlan',
+        'description'   => __('该区域的小工具将显示在所有帖子和页面上。', 'dalewenzhang'),
+        'before_widget' => '',
+        'after_widget'  => '',
+        'before_title'  => '',
+        'after_title'   => '',
+    ));
+    register_sidebar(array(
+        'name'          => __('下边栏', 'dalewenzhang'),
+        'id'            => 'xiabianlan',
+        'description'   => __('该区域的小工具将显示在所有帖子和页面上。', 'dalewenzhang'),
+        'before_widget' => '',
+        'after_widget'  => '',
+        'before_title'  => '',
+        'after_title'   => '',
+    ));
+}
+add_action('widgets_init', 'dalewenzhang_zhucebianlan');
+/**
+ * 在自定义主题自定义选项中添加自定义头部设置选项
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
+function dalewenzhang_customize_register($wp_customize)
+{
+    // 页头设置选项
+    $wp_customize->add_section('header_image', array(
+        'title'    => __('页头设置', 'dalewenzhang'),
+        'priority' => 20,
+    ));
 
+    $wp_customize->add_setting('header_image_placement', array(
+        'default'           => 'no',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('header_image_placement', array(
+        'label'    => __('选择图像位置', 'dalewenzhang'),
+        'section'  => 'header_image',
+        'type'     => 'select',
+        'choices'  => array(
+            'no'      => __('关闭图像', 'dalewenzhang'),
+            'above'   => __('头部上方', 'dalewenzhang'),
+            'below'   => __('头部下方', 'dalewenzhang'),
+            'beijing' => __('头部背景', 'dalewenzhang'),
+        ),
+    ));
+
+    $wp_customize->add_setting('header_image_link', array(
+        'default' => '',
+        'sanitize_callback' => 'sanitize_link_field',
+    ));
+    $wp_customize->add_control(new WP_Customize_Control($wp_customize, 'header_image_link', array(
+        'label'    => __('图像链接', 'dalewenzhang'),
+        'section' => 'header_image',
+        'settings' => 'header_image_link',
+        'type' => 'text',
+    )));
+
+    $wp_customize->add_setting('header_beijing_color', array(
+        'default' => '#ffffff',
+        'sanitize_callback' => 'sanitize_hex_color',
+    ));
+    $wp_customize->add_control(new WP_Customize_Control($wp_customize, 'header_beijing_color', array(
+        'label'    => __('背景颜色', 'dalewenzhang'),
+        'section' => 'header_image',
+        'settings' => 'header_beijing_color',
+        'type' => 'color',
+    )));
+
+    $wp_customize->add_setting('header_height', array(
+        'default'           => 80,
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('header_height', array(
+        'label'    => __('调整头部高度(px)', 'dalewenzhang'),
+        'section'  => 'header_image',
+        'settings' => 'header_height',
+        'type'     => 'number',
+    ));
+
+    $wp_customize->add_setting('displa_description', array(
+        'default'           => false,
+        'sanitize_callback' => 'wp_validate_boolean',
+    ));
+    $wp_customize->add_control('displa_description', array(
+        'label'    => __('显示副标题', 'dalewenzhang'),
+        'section'  => 'header_image',
+        'settings' => 'displa_description',
+        'type'     => 'checkbox',
+    ));
+}
+add_action('customize_register', 'dalewenzhang_customize_register');
+
+/**
+ * 自定义头部
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
+function dalewenzhang_custom_header_fun()
+{
+    $custom_header = get_custom_header();
+    if ($custom_header) {
+        $header_image_url = $custom_header->url;
+    } else {
+        $header_image_url = get_theme_support('custom-header');
+    }
+
+    $header_image_placement = get_theme_mod('header_image_placement');
+    $beijingstyle = '';
+    if ($header_image_placement === 'beijing') {
+        $beijingstyle = $header_image_url ? 'background-image:url(' . esc_url($header_image_url) . ');background-size:cover;background-repeat:no-repeat;background-position:center center;' : '';
+    }
+    $header_height = get_theme_mod('header_height');
+
+    $header_beijing_color = get_theme_mod('header_beijing_color');
+    if ($header_beijing_color) {
+        $beijingstyle = 'background-color:' . $header_beijing_color . '!important;';
+    }
+
+    $header_image_link = get_theme_mod('header_image_link');
+    if ($header_image_link) {
+        $divimghtml = $header_image_url ? '<a href="' . esc_url($header_image_link) . '" target="_blank"><img src="' . esc_url($header_image_url) . '" class="img-fluid w-100" alt="head_img"></a>' : '';
+    } else {
+        $divimghtml = $header_image_url ? '<img src="' . esc_url($header_image_url) . '" class="img-fluid w-100" alt="head_img">' : '';
+    }
+
+    $head_text_color = get_header_textcolor();
+    if ($head_text_color) {
+        echo '<style>.yetou a,.yetou button,.yetou h1,.yetou h5{color:#' . $head_text_color . '!important;}</style>';
+    }
+
+    if ($header_image_placement === 'above') echo $divimghtml;
+?>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-0 yetou" style="height:<?php echo $header_height; ?>px;<?php echo $beijingstyle; ?>">
+        <div class="container">
+            <?php if (has_custom_logo()) : ?>
+                <?php echo get_custom_logo(); ?>
+            <?php endif; ?>
+            <?php if (display_header_text()) : ?>
+                <a class="navbar-brand" href="<?php echo esc_url(home_url()); ?>" aria-label="<?php _e('跳转到首页', 'dalewenzhang') ?>">
+                    <h1 class="fs-3 fw-bold text-center text-wrap mb-0"><?php echo get_bloginfo('name', 'display') ?></h1>
+                    <?php if (get_theme_mod('displa_description')) : ?>
+                        <h5 class="fs-6 text-muted text-wrap mb-0"><?php echo get_bloginfo('description', 'display') ?></h5>
+                    <?php endif; ?>
+                </a>
+            <?php endif; ?>
+            <button class="navbar-toggler" type="button" aria-label="<?php _e('打开菜单', 'dalewenzhang') ?>" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title text-wrap" id="offcanvasNavbarLabel"><?php echo get_bloginfo('name', 'display') ?></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="<?php _e('关闭菜单', 'dalewenzhang') ?>"></button>
+                </div>
+                <div class="offcanvas-body d-flex">
+                    <ul class="navbar-nav itemlist flex-grow-1 flex-wrap">
+                        <?php
+                        wp_nav_menu(array(
+                            'theme_location'  => 'head_nav',
+                            'container'       => false,
+                            'items_wrap'      => '%3$s',
+                            'fallback_cb'     => 'dalewenzhang_to_zhuti_bianji_link',
+                        ));
+                        ?>
+                    </ul>
+                    <ul class="navbar-nav align-items-center">
+                        <li class="nav-item ps-2">
+                            <button aria-label="<?php _e('搜索按钮', 'dalewenzhang') ?>" class="btn btn-outline-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop" aria-controls="offcanvasTop"><i class="bi bi-search"></i></button>
+                        </li>
+                        <li class="nav-item ps-2 pt-lg-0 pt-2">
+                            <a class="btn btn-outline-dark dsw-60" href="<?php echo esc_url(wp_login_url()); ?>">
+                                <?php echo __('登录', 'dalewenzhang') ?>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+<?php
+    if ($header_image_placement === 'below') echo $divimghtml;
+}
+add_action('dalewenzhang_custom_header', 'dalewenzhang_custom_header_fun');
+/**
+ * 自定义块
+ * @author dale6.com <gaojie11@163.com>
+ * @since 1.0.0
+ * @return void
+ */
+function dalewenzhang_register_my_patterns()
+{
+    $login_url = wp_login_url();
+    register_block_pattern(
+        'dalewenzhang/loginbutton',
+        array(
+            'title'       => __('登录', 'dalewenzhang'),
+            'description' => __('一个登录链接按钮', 'dalewenzhang'),
+            'categories'  => array('text'),
+            'content'     =>  '<!-- wp:paragraph -->
+            <a href="' . $login_url . '">登录</a>
+            <!-- /wp:paragraph -->',
+        )
+    );
+}
+add_action('init', 'dalewenzhang_register_my_patterns');
 // 添加JS到首页 
 if (!function_exists('dalewenzhang_script')) {
     function dalewenzhang_script()
@@ -52,136 +290,7 @@ if (!function_exists('dalewenzhang_script')) {
 }
 add_action('wp_enqueue_scripts', 'dalewenzhang_script');
 
-/**
- * 去除评论所有HTML标记,只保留code标签，再加上pre标签用来代码美化
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @param string    $comment_text    评论
- * @param bool      $deltags         是否删除html标签
- * @return string   $comment_text
- */
-function dalewenzhang_pinglun_guolv($comment_text, $deltags = true)
-{
-    if ($deltags) $comment_text = strip_tags($comment_text, array('<code>'));
-    // 正则获取 <code> 之内的数据，在外围添加<pre></pre>
-    $code_zz = "/<code>(.*?)<\/code>/is";
-    if (preg_match($code_zz, $comment_text)) {
-        preg_match_all($code_zz, $comment_text, $jg);
-        // 给代码内容添加code pre
-        if (count($jg[0]) > 0 && !empty($jg[0][0])) {
-            // 先处理相同数据
-            $jg[0] = array_unique($jg[0]);
-            $jg[1] = array_unique($jg[1]);
-            $un = array();
-            foreach ($jg[0] as $k => $v) {
-                // 唯一字符
-                $un[$k] = '[' . md5(microtime(true) . $k) . ']';
-                // 先替换为唯一字符
-                $comment_text = str_ireplace($v, $un[$k], $comment_text);
-            }
-            if ($deltags) $comment_text = strip_tags($comment_text);
-            $comment_text = dalewenzhang_text_add_tags($comment_text, $un);
-            foreach ($jg[0] as $k => $v) {
-                $t = htmlentities(trim($jg[1][$k]));
-                $comment_text = str_ireplace($un[$k], '<pre><code>' . $t . '</code></pre>', $comment_text);
-            }
-        }
-    } else {
-        $comment_text = dalewenzhang_text_add_tags($comment_text);
-    }
-    return $comment_text;
-}
-/**
- * 给文本添加p标签,有排除字符或数组
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @param string $text 待处理的文本字符串
- * @param string[]|string $paichu 需要排除的字符串或字符串数组
- * @return string 处理后的字符串
- */
-function dalewenzhang_text_add_tags($text, $paichu = '')
-{
-    $tbj = '<rn|n>';
-    $text = str_ireplace(array("\r\n", "\n"), $tbj, trim($text));
-    if (stripos($text, $tbj) !== false) {
-        $tarr = array();
-        $tjg = explode($tbj, $text);
-        $tjg = array_unique(array_filter($tjg));
-        foreach ($tjg as $k => $v) {
-            if (is_array($paichu) && count($paichu) > 0) {
-                foreach ($paichu as $v1) {
-                    if (stripos($v, $v1) !== false) {
-                        $v = str_replace($v1, $tbj . $v1 . $tbj, $v);
-                    }
-                }
-            }
-            if (is_string($paichu) && !empty($paichu)) {
-                if (stripos($v, $paichu) !== false) {
-                    $v = str_replace($paichu, $tbj . $paichu . $tbj, $v);
-                }
-            }
-            if (stripos($v, $tbj) !== false) {
-                $tarr = array_merge($tarr, explode($tbj, $v));
-            } else {
-                $tarr[] = $v;
-            }
-        }
-        $tjg = array();
-        $tarr = array_unique(array_filter($tarr));
-        foreach ($tarr as $k => $v) {
-            if (is_array($paichu) && count($paichu) > 0) {
-                foreach ($paichu as $v1) {
-                    if ($v == $v1) {
-                        $tjg[] = $v;
-                        continue 2;
-                    }
-                }
-            }
-            if (is_string($paichu) && !empty($paichu)) {
-                if ($v == $paichu) {
-                    $tjg[] = $v;
-                    continue;
-                }
-            }
-            $tjg[] =  '<p>' . $v . '</p>';
-        }
-        $text = implode('', $tjg);
-    }
-    return $text;
-}
-/**
- * 评论文字长度警告
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @param string         $comment_text    评论
- * @return string|void   $comment_text
- */
-function dalewenzhang_pinglun_text_post($comment_text)
-{
-    if (strlen($comment_text) < 20) {
-        wp_die(__('评论过短，请控制在超过20字符上！', 'dalewenzhang'));
-    }
-    if (strlen($comment_text) > 5000) {
-        wp_die(__('评论过长，请控制在不超过5000字符内！', 'dalewenzhang'));
-    }
-    return dalewenzhang_pinglun_guolv($comment_text);
-}
-/**
- * 评论文字长度限制
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @param string    $comment_text    评论
- * @return string   $comment_text
- */
-function dalewenzhang_pinglun_text($comment_text)
-{
-    if (strlen($comment_text) > 5000) {
-        $comment_text = mb_strimwidth($comment_text, 0, 5000, '...');
-    }
-    return $comment_text;
-}
-
-// 文章内容输出简介
+// 限制文章内容输出简介
 add_filter('dalewenzhang_the_excerpt', function ($content) {
     $content = apply_filters('the_content', $content);
     $content = str_replace(']]>', ']]&gt;', $content);
@@ -189,19 +298,6 @@ add_filter('dalewenzhang_the_excerpt', function ($content) {
     return $content;
 });
 
-// 在评论数据被清理并插入数据库之前过滤它
-add_filter('preprocess_comment', function ($comment) {
-    $comment['comment_content'] = dalewenzhang_pinglun_text_post($comment['comment_content']);
-    return $comment;
-});
-// 更新评论
-add_filter('comment_save_pre', 'dalewenzhang_pinglun_text_post');
-// 输出评论内容 
-add_filter('comment_text', 'dalewenzhang_pinglun_text');
-// 显示在提要中使用的当前评论内容。 
-add_filter('comment_text_rss', 'dalewenzhang_pinglun_text');
-// 过滤评论摘录
-add_filter('comment_excerpt', 'dalewenzhang_pinglun_text');
 
 /**
  * 递归添加子评论到父评论
@@ -246,7 +342,7 @@ function dalewenzhang_echo_comment($comment, $args, $depth)
         $add_below = 'div-comment';
     }
     $imgh = !empty($comment->comment_parent) ? 24 : 40;
-    if (!empty($comment->comment_parent) && $user_info = get_userdata($comment->comment_parent)) {
+    if (!empty($comment->comment_parent) && $user_info = get_userdata(get_comment($comment->comment_parent)->user_id)) {
         $patent = true;
     } else {
         $patent = false;
@@ -276,7 +372,6 @@ function dalewenzhang_echo_comment($comment, $args, $depth)
                 <?php endif; ?>
             </div>
         </div>
-
         <?php if ($patent) : ?>
             <div class="px-3">
                 <?php _e('回复', 'dalewenzhang'); ?>
@@ -325,24 +420,6 @@ function dalewenzhang_echo_comment($comment, $args, $depth)
     <?php if ('div' != $args['style']) echo '</div>' ?>
     <?php
 }
-/**
- * 编辑评论回复link
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @return string 编辑后的链接
- */
-function dalewenzhang_edit_reply_link($link, $args)
-{
-    if (get_option('comment_registration') && !is_user_logged_in()) {
-
-        $link = $args['before'] . sprintf(
-            '<a rel="nofollow" class="comment-reply-login" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#exampleModal">%s</a>',
-            $args['login_text']
-        ) . $args['after'];
-    }
-    return $link;
-}
-add_filter('comment_reply_link', 'dalewenzhang_edit_reply_link', 10, 2);
 /**
  * 跳转到主题编辑link
  * @author dale6.com <gaojie11@163.com>
@@ -397,36 +474,6 @@ function dalewenzhang_jiange_time($qianzui, $date, $houzui)
     }
 }
 
-add_filter('nav_menu_css_class', 'dalewenzhang_css_attributes_filter', 100, 1);
-add_filter('nav_menu_item_id', 'dalewenzhang_css_attributes_filter', 100, 1);
-add_filter('page_css_class', 'dalewenzhang_css_attributes_filter', 100, 1);
-add_filter('nav_menu_link_attributes', 'dalewenzhang_sonliss_menu_link_atts');
-
-/**
- * 移除菜单的多余CSS选择器,给菜单a标签添加class
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @param array|null 参数
- * @return array|null|string
- */
-function dalewenzhang_css_attributes_filter($var)
-{
-    return is_array($var) ? array('nav-item', 'text-center') : '';
-}
-
-/**
- * 修改菜单class样式
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @param array 参数
- * @return array
- */
-function dalewenzhang_sonliss_menu_link_atts($atts)
-{
-    $atts['class'] = 'nav-link';
-    return $atts;
-}
-
 // 注册菜单
 register_nav_menus(array(
     'head_nav'   => __('页头', 'dalewenzhang'),
@@ -456,143 +503,9 @@ function dalewenzhang_get_display_name($object)
     if (!empty($object->user_login)) return $object->user_login;
     return __('未知用户', 'dalewenzhang');
 }
-
-
-/**
- * 限制博客信息长度
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @param  string 将要输出的字符串
- * @param  string 将要输出的类型
- * @return string 限制长度后的字符串 
- */
-function dalewenzhang_xianzhi_info($output, $show)
-{
-    // 限制网站名称长度为20字符
-    // if ($show == 'name') $output = mb_substr($output, 0, 20, 'utf8');
-    // 限制网站介绍长度为200字符
-    if ($show == 'description') $output = mb_substr($output, 0, 200, 'utf8');
-    return $output;
-}
-add_filter('bloginfo', 'dalewenzhang_xianzhi_info', 10, 2);
-
-/**
- * 修改登录表单CLASS样式
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @return string
- */
-function dalewenzhang_login_form($loginformstr)
-{
-    $loginformstr = preg_replace(array(
-        '/<p class="login-username">/is',
-        '/<p class="login-username(.*?)class="input"(.*?)<\/p>/is',
-        '/<p class="login-password">/is',
-        '/<p class="login-password(.*?)class="input"(.*?)<\/p>/is',
-        '/<p class="login-submit">/is',
-        '/<p class="login-submit(.*?)class="button button-primary"(.*?)<\/p>/is',
-        '/<p class="login-username(.*?)">(.*?)<label(.*?)<\/label>(.*?)<\/p>/is',
-        '/<p class="login-password(.*?)">(.*?)<label(.*?)<\/label>(.*?)<\/p>/is',
-        '/<p class="login-username(.*?)<input(.*?)class="(.*?)"(.*?)<\/p>/is',
-        '/<p class="login-password(.*?)<input(.*?)class="(.*?)"(.*?)<\/p>/is',
-    ), array(
-        '<p class="login-username form-floating mb-4">',
-        '<p class="login-username$1class="input form-control"$2</p>',
-        '<p class="login-password form-floating mb-4">',
-        '<p class="login-password$1class="input form-control"$2</p>',
-        '<p class="login-submit mb-4 d-grid">',
-        '<p class="login-submit$1class="btn btn-success"$2</p>',
-        '<p class="login-username$1">$2$4<label$3</label></p>',
-        '<p class="login-password$1">$2$4<label$3</label></p>',
-        '<p class="login-username$1<input$2 placeholder="username" class="$3"$4</p>',
-        '<p class="login-password$1<input$2 placeholder="password" class="$3"$4</p>',
-    ), $loginformstr);
-    return $loginformstr;
-}
-add_filter('dalewenzhang_login_form', 'dalewenzhang_login_form');
-/**
- * 追加注册链接
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @return string
- */
-function dalewenzhang_login_form_bottom($str)
-{
-    return wp_register('', '', false);
-}
-add_filter('login_form_bottom', 'dalewenzhang_login_form_bottom');
-/**
- * 获取当前页面url
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @return string
- */
-function dalewenzhang_this_url()
-{
-    $current_url = home_url(add_query_arg(array()));
-    if (is_single()) {
-        $current_url = preg_replace('/(\/comment|page|#).*$/', '', $current_url);
-    } else {
-        $current_url = preg_replace('/(comment|page|#).*$/', '', $current_url);
-    }
-    return $current_url;
-}
-add_action('login_head', function () {
-    echo '<style type="text/css">#login h1 a {background-image:unset;display:contents;}#login form{background:unset;border:unset;box-shadow:unset;}</style>';
-});
-
-add_filter('login_headertext', function () {
-    return get_bloginfo('name');
-});
-
-add_filter('login_headerurl', function () {
-    return home_url();
-});
-
-
+// 空标题处理
 add_filter('dalewenzhang_the_title', function ($title) {
     $title = trim($title);
     if (empty($title)) return __('未知标题', 'dalewenzhang');
     return $title;
 });
-
-/**
- * 修改 pingback 自动评论内容格式
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @param string $comment 评论内容
- * @return string
- */
-function dalewenzhang_pingback_or_trackback_comment_content($comment)
-{
-    $comment_content = '<a href="' . $comment->comment_author_url . '" target="_blank" rel="noopener noreferrer nofollow">' . __('很荣幸转载了你的文章!感谢!', 'dalewenzhang') . '</a>';
-    return $comment_content;
-}
-add_filter('dalewenzhang_pingback_or_trackback_comment_content', 'dalewenzhang_pingback_or_trackback_comment_content');
-
-/**
- * 修改 pingback 自动评论显示名称
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @return string
- */
-function dalewenzhang_pingback_or_trackback_display_name($comment)
-{
-    $display_name = parse_url($comment->comment_author_url, PHP_URL_HOST);
-    return $display_name;
-}
-add_filter('dalewenzhang_pingback_or_trackback_display_name', 'dalewenzhang_pingback_or_trackback_display_name');
-
-
-/**
- * 角色注销后跳转地址
- * @author dale6.com <gaojie11@163.com>
- * @since 1.0.0
- * @return string 返回结果
- */
-function dalewenzhang_logout_redirect($logouturl)
-{
-    $outurl = dalewenzhang_this_url();
-    return $logouturl . '&redirect_to=' . urlencode($outurl);
-}
-add_filter('logout_url', 'dalewenzhang_logout_redirect');
