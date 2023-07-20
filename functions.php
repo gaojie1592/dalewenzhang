@@ -241,11 +241,13 @@ function dalewenzhang_custom_header_fun()
                         <li class="nav-item ps-2">
                             <button aria-label="<?php _e('搜索按钮', 'dalewenzhang') ?>" class="btn btn-outline-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop" aria-controls="offcanvasTop"><i class="bi bi-search"></i></button>
                         </li>
-                        <li class="nav-item ps-2 pt-lg-0 pt-2">
-                            <a class="btn btn-outline-dark dsw-60" href="<?php echo esc_url(wp_login_url()); ?>">
-                                <?php echo __('登录', 'dalewenzhang') ?>
-                            </a>
-                        </li>
+                        <?php if (!is_user_logged_in()) : ?>
+                            <li class="nav-item ps-2 pt-lg-0 pt-2">
+                                <a class="btn btn-outline-dark dsw-60" href="<?php echo esc_url(wp_login_url(get_site_url() . $_SERVER['REQUEST_URI'])); ?>">
+                                    <?php echo __('登录', 'dalewenzhang') ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
             </div>
@@ -286,6 +288,10 @@ if (!function_exists('dalewenzhang_script')) {
         wp_enqueue_style('dalewenzhang_css_dale6', esc_url(get_template_directory_uri()) . "/css/dalewenzhang_styles_index.css");
         wp_enqueue_script('dalewenzhang_js_bootstrap', esc_url(get_template_directory_uri()) . '/js/bootstrap.bundle.min.js');
         wp_enqueue_script('dalewenzhang_js_index', esc_url(get_template_directory_uri()) . '/js/dalewenzhang_index.js');
+        // 在回复下面直接评论
+        if (is_singular() && comments_open() && get_option('thread_comments')) {
+            wp_enqueue_script('comment-reply');
+        }
     }
 }
 add_action('wp_enqueue_scripts', 'dalewenzhang_script');

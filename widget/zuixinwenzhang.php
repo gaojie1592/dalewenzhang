@@ -26,7 +26,7 @@ class zuixinwenzhang extends WP_Widget
     public function widget($args, $instance)
     {
         extract($args);
-        $title = apply_filters('widget_title', $instance['title']);
+        $title = apply_filters('widget_title', isset($instance['title']) ? $instance['title'] : '');
         echo $before_widget;
         if (!empty($title)) {
             $titlee = $before_title . $title . $after_title;
@@ -84,7 +84,7 @@ class zuixinwenzhang extends WP_Widget
         }
     ?>
         <p>
-            <label for="<?php echo $this->get_field_name('title'); ?>"><?php _e('Title:'); ?></label>
+            <label for="<?php echo $this->get_field_name('title'); ?>"><?php _e('Title:', 'dalewenzhang'); ?></label>
             <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" />
         </p>
 <?php
