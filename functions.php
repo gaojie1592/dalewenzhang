@@ -243,7 +243,7 @@ function dalewenzhang_custom_header_fun()
                         </li>
                         <?php if (!is_user_logged_in()) : ?>
                             <li class="nav-item ps-2 pt-lg-0 pt-2">
-                                <a class="btn btn-outline-dark dsw-60" href="<?php echo esc_url(wp_login_url(get_site_url() . $_SERVER['REQUEST_URI'])); ?>">
+                                <a class="btn btn-outline-dark dsw-60" href="<?php echo esc_url(wp_login_url(home_url() . $_SERVER['REQUEST_URI'])); ?>">
                                     <?php echo __('登录', 'dalewenzhang') ?>
                                 </a>
                             </li>
